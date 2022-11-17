@@ -2,16 +2,15 @@ FROM php:8.1-fpm
 
 ARG ARCHITECTURE=$(arch)
 
-RUN apt-get update
-RUN apt-get install -y \
-        unzip \
-        vim \
-        wget \
-        curl \
-        git \
-        openssh-server \
-        cron \
-        bash-completion
+RUN apt-get -y update
+RUN apt-get install -y unzip
+RUN apt-get install -y vim
+RUN apt-get install -y wget
+RUN apt-get install -y curl
+RUN apt-get install -y git
+RUN apt-get install -y openssh-server
+RUN apt-get install -y cron
+RUN apt-get install -y bash-completion
 
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
