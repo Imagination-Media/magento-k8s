@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - 'master'
-    paths:
-      - 'php-fpm/8.1/**'
+#    paths:
+#      - 'php-fpm/8.1/**'
   workflow_dispatch:
     inputs:
       logLevel:
@@ -21,12 +21,12 @@ on:
 jobs:
   image:
     name: Build Image
-    strategy:
-      matrix:
-        os: [ubuntu-latest, [self-hosted, linux, ARM64]]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Create image
         uses: elgohr/Publish-Docker-Github-Action@v4
@@ -37,3 +37,4 @@ jobs:
           registry: ghcr.io
           tags: 8.1
           workdir: php-fpm/8.1
+          platforms: linux/amd64,linux/arm64
