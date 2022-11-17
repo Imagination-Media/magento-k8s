@@ -1,0 +1,3 @@
+Image name:
+imagination-media/magento-k8s/php-fpm:8.1
+ghcr.io/imagination-media/magento-k8s/php-fpm:8.1
