@@ -20,8 +20,11 @@ on:
 
 jobs:
   image:
-    name: x64
-    runs-on: [ubuntu-latest, [self-hosted, linux, ARM64]]
+    name: Build Image
+    strategy:
+      matrix:
+        os: [ubuntu-latest, [self-hosted, linux, ARM64]]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
 
