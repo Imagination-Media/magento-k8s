@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - 'master'
-    paths:
-      - 'php-fpm/8.1/**'
+#    paths:
+#      - 'php-fpm/8.1/**'
   workflow_dispatch:
     inputs:
       logLevel:
@@ -34,7 +34,7 @@ jobs:
       - name: Create image
         uses: elgohr/Publish-Docker-Github-Action@v4
         with:
-          name: imagination-media/magento-demo-open-source/nginx
+          name: imagination-media/magento-k8s/php-fpm
           username: igor-imaginemage
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
