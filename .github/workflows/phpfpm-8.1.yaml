@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - 'master'
-#    paths:
-#      - 'php-fpm/8.1/**'
+    paths:
+      - 'php-fpm/8.1/**'
   workflow_dispatch:
     inputs:
       logLevel:
