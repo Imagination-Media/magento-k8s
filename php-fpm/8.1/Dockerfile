@@ -1,7 +1,5 @@
 FROM php:8.1-fpm
 
-ARG ARCHITECTURE=$(arch)
-
 RUN apt-get -y update
 RUN apt-get install -y unzip
 RUN apt-get install -y vim
@@ -97,8 +95,9 @@ RUN docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcnt
 # Install sourceguardian
 RUN mkdir -p /tmp/sourceguardian/
 RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20190902
-RUN if [[ -z "$ARCHITECTURE" == *"arm"* ]] ; then curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-aarch64.tar.gz && tar -xzvf /tmp/sourceguardian/loaders.linux-aarch64.tar.gz -C /tmp/sourceguardian ; else curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-x86_64.tar.gz && tar -xzvf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian ; fi
+RUN if [[ $(arch) == *"arm"* ]] || [[ $(arch) == *"arch"* ]]; then curl --create-dirs -O --output-dir  https://www.sourceguardian.com/loaders/download/loaders.linux-aarch64.tar.gz && tar -xzvf /tmp/sourceguardian/loaders.linux-aarch64.tar.gz -C /tmp/sourceguardian ; else curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-x86_64.tar.gz && tar -xzvf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian ; fi
 RUN cp /tmp/sourceguardian/ixed.8.1.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
+RUN chmod 775 /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
 RUN echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin' > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
 
 # Install composer
@@ -125,4 +124,4 @@ EXPOSE 22
 
 # Execute the startup bash script on the startup
 COPY startup.sh /root/startup.sh
-ENTRYPOINT ["sh", "/root/startup.sh"]
+ENTRYPOINT ["/bin/bash", "/root/startup.sh"]
