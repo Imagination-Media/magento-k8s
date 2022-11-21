@@ -21,9 +21,9 @@ cd /var/www/html/ && chmod -R 750 app/etc/config.php
 if [[ -z "$setup_upgrade" || "$setup_upgrade" == "0" ]]; then
   echo "Not running setup:upgrade"
 else
-  su - nginx -c 'php /var/www/html/bin/magento setup:upgrade --keep-generated'
-  su - nginx -c 'php /var/www/html/bin/magento setup:di:compile'
-  su - nginx -c 'php /var/www/html/bin/magento bin/magento setup:static-content:deploy -f'
+  php /var/www/html/bin/magento setup:upgrade --keep-generated
+  php /var/www/html/bin/magento setup:di:compile
+  php /var/www/html/bin/magento bin/magento setup:static-content:deploy -f
 fi
 
 # Set up SourceGuardian
