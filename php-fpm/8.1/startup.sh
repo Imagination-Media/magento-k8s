@@ -21,9 +21,11 @@ cd /var/www/html/ && chmod -R 750 app/etc/config.php
 if [[ -z "$setup_upgrade" || "$setup_upgrade" == "0" ]]; then
   echo "Not running setup:upgrade"
 else
+  cd /var/www/html/ && /usr/local/bin/composer install --no-dev --ignore-platform-reqs
   php /var/www/html/bin/magento setup:upgrade --keep-generated
   php /var/www/html/bin/magento setup:di:compile
   php /var/www/html/bin/magento bin/magento setup:static-content:deploy -f
+  cd /var/www/html/ && /usr/local/bin/composer dump-autoload -o
 fi
 
 # Set up SourceGuardian
