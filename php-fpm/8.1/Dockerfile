@@ -92,15 +92,12 @@ RUN docker-php-ext-install xsl
 RUN docker-php-ext-install sockets
 RUN docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
 
-# Install sourceguardian
+# Download sourceguardian
 RUN mkdir -p /tmp/sourceguardian/
 RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20190902
-RUN isArch="$(arch)"
-RUN archCode="aarch64"
-RUN if [ "$isArch" = "$archCode" ]; then echo "aarch64" && curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-aarch64.tar.gz && tar -xzvf /tmp/sourceguardian/loaders.linux-aarch64.tar.gz -C /tmp/sourceguardian ; else echo "not aarch64" && curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-x86_64.tar.gz && tar -xzvf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian ; fi
-RUN cp /tmp/sourceguardian/ixed.8.1.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
-RUN chmod 775 /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
-RUN echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin' > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
+RUN mkdir -p /tmp/sourceguardian
+RUN curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-aarch64.tar.gz
+RUN curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-x86_64.tar.gz
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
