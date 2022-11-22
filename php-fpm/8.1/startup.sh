@@ -7,6 +7,7 @@ else
   echo "Setting up cron jobs"
   echo "$cron_jobs" > /var/www/cron-jobs.base64
   base64 -d /var/www/cron-jobs.base64 > /var/www/cron-jobs
+  echo  >> /var/www/cron-jobs
   rm -rf /var/www/cron-jobs.base64
   chmod 777 /var/www/cron-jobs
   su - nginx -c 'crontab /var/www/cron-jobs'
@@ -24,7 +25,7 @@ else
   cd /var/www/html/ && /usr/local/bin/composer install --no-dev --ignore-platform-reqs
   php /var/www/html/bin/magento setup:upgrade --keep-generated
   php /var/www/html/bin/magento setup:di:compile
-  php /var/www/html/bin/magento bin/magento setup:static-content:deploy -f
+  php /var/www/html/bin/magento setup:static-content:deploy -f
   cd /var/www/html/ && /usr/local/bin/composer dump-autoload -o
 fi
 
@@ -32,10 +33,8 @@ fi
 isArch="$(arch)"
 archCode="aarch64"
 if [ "$isArch" = "$archCode" ]; then
-  echo "aarch64"
   tar -xzvf /tmp/sourceguardian/loaders.linux-aarch64.tar.gz -C /tmp/sourceguardian
 else
-  echo "not aarch64"
   tar -xzvf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian
 fi
 cp /tmp/sourceguardian/ixed.8.1.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
