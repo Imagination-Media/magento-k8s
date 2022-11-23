@@ -14,7 +14,7 @@ else
   rm /var/www/cron-jobs
 fi
 
-# Back app/etc/env.php and app/etc/config.php to non editable
+# Put back app/etc/env.php and app/etc/config.php to non editable
 cd /var/www/html/ && chmod -R 750 app/etc/env.php
 cd /var/www/html/ && chmod -R 750 app/etc/config.php
 
@@ -33,16 +33,21 @@ fi
 isArch="$(arch)"
 archCode="aarch64"
 if [ "$isArch" = "$archCode" ]; then
-  tar -xzvf /tmp/sourceguardian/loaders.linux-aarch64.tar.gz -C /tmp/sourceguardian
+  tar -xzf /tmp/sourceguardian/loaders.linux-aarch64.tar.gz -C /tmp/sourceguardian
 else
-  tar -xzvf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian
+  tar -xzf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian
 fi
 cp /tmp/sourceguardian/ixed.8.1.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
 chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
 echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin' > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
 
 # Initialize the open ssh server
-service ssh start
+if [[ -z "$enable_ssh" || "$enable_ssh" == "0" ]]; then
+  echo "SSH not enabled"
+else
+  echo "SSH enabled"
+  service ssh start
+fi
 
 # Start php-fpm
 php-fpm
