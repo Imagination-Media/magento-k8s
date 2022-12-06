@@ -31,7 +31,7 @@ RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyri
 RUN apt-get update
 RUN apt-get install kmod -y
 ENV CLOUDSDK_PYTHON=/usr/local/bin/python3.9
-RUN apt-get install google-cloud-cli -f -y
+RUN apt-get install google-cloud-cli -y
 
 # Install gcsfuse
 RUN apt-get install fuse -y

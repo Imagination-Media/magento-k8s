@@ -15,8 +15,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 RUN apt-get update
 RUN apt-get install kmod -y
-ENV CLOUDSDK_PYTHON=/usr/local/bin/python3.9
-RUN apt-get install google-cloud-cli -f -y
+RUN apt-get install google-cloud-cli -y
 
 # Install gcsfuse
 RUN apt-get install fuse -y
