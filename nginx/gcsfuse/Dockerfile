@@ -6,7 +6,7 @@ RUN chmod 755 /docker-entrypoint.d/00-nginx-conf-mod.sh
 RUN chmod +x /docker-entrypoint.d/00-nginx-conf-mod.sh
 
 # Install Python 3
-RUN apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev
+RUN apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev -y
 RUN curl -O https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz
 RUN tar -xf Python-3.9.1.tgz
 RUN cd Python-3.9.1
