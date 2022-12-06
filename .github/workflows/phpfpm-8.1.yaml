@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'php-fpm/**'
+      - 'php-fpm/8.1/**'
   workflow_dispatch:
     inputs:
       logLevel:
@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
           tags: 8.1
-          workdir: php-fpm/8.1
+          workdir: php-fpm/8.1/base
           platforms: linux/amd64,linux/arm64
 
   php_fpm_81_gcsfuse:
@@ -63,5 +63,5 @@ jobs:
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
           tags: 8.1-gcsfuse
-          workdir: php-fpm/8.1-gcsfuse
+          workdir: php-fpm/8.1/gcsfuse
           platforms: linux/amd64,linux/arm64
