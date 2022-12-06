@@ -43,7 +43,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
 
   nginx_gcsfuse:
-    name: Php-fpm (8.1) + Gcsfuse
+    name: Nginx base + Gcsfuse
     runs-on: ubuntu-latest
     needs: [ nginx ]
     steps:
