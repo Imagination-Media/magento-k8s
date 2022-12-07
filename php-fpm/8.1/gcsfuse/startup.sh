@@ -33,7 +33,7 @@ else
   cd /var/www/html/ && /usr/local/bin/composer install --no-dev --ignore-platform-reqs
   php /var/www/html/bin/magento setup:upgrade --keep-generated
   php /var/www/html/bin/magento setup:di:compile
-  php /var/www/html/bin/magento setup:static-content:deploy -f
+  php /var/www/html/bin/magento setup:static-content:deploy -f --jobs "$magento_static_content_jobs"
   cd /var/www/html/ && /usr/local/bin/composer dump-autoload -o
 fi
 
