@@ -1,5 +1,7 @@
 FROM nginx:1.23.2
 
+WORKDIR /var/www/html
+
 # Install git
 RUN apt-get update
 RUN apt-get install -y git vim zip

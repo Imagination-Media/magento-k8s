@@ -5,7 +5,8 @@ RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
     curl -O https://dl.google.com/go/go1.19.3.linux-${arch}.tar.gz && \
     tar xvf go1.19.3.linux-${arch}.tar.gz && \
     chown -R root:root ./go && \
-    mv go /usr/local
+    mv go /usr/local && \
+    rm -rf go1.19.3.linux-${arch}.tar.gz
 ENV GOPATH=$HOME/work
 ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 

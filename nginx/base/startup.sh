@@ -8,6 +8,8 @@
 #ARG php_fpm_service
 #ARG ip_addresses
 
+chown nginx:nginx /var/www/html/var
+
 # Adjust admin store domain
 sed -i -e "s/admin.mydemo.com/$admin_domain/g" /etc/nginx/nginx.conf
 

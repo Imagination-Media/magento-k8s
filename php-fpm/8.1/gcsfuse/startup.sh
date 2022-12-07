@@ -1,15 +1,29 @@
 #!/bin/sh
 
+chown nginx:nginx /var/www/html/var
+
 #Mount volumes
-mkdir -p /root/.config/gcloud && echo "$gke_service_account_key" >> /root/.config/gcloud/application_default_credentials.base64
-base64 -d /root/.config/gcloud/application_default_credentials.base64 > /root/.config/gcloud/application_default_credentials.json
-rm -rf /root/.config/gcloud/application_default_credentials.base64
-gcloud auth activate-service-account "$gke_email" --key-file=/root/.config/gcloud/application_default_credentials.json
-gcsfuse "$gke_bucket_var_export" /var/www/html/var/export
-gcsfuse "$gke_bucket_var_importexport" /var/www/html/var/importexport
-gcsfuse "$gke_bucket_var_log" /var/www/html/var/log
-gcsfuse "$gke_bucket_var_report" /var/www/html/var/report
-gcsfuse "$gke_bucket_pub_media" /var/www/html/pub/media
+mkdir -p /var/www/html/.config/gcloud
+echo "$gke_service_account_key" >> /var/www/html/.config/gcloud/application_default_credentials.base64
+base64 -d /var/www/html/.config/gcloud/application_default_credentials.base64 > /var/www/html/.config/gcloud/application_default_credentials.json
+rm -rf /var/www/html/.config/gcloud/application_default_credentials.base64
+chown -R nginx:nginx /var/www/html/.config/
+su - nginx -c 'gcloud auth activate-service-account '"$gke_email"' --key-file=/var/www/html/.config/gcloud/application_default_credentials.json'
+
+mkdir -p /var/www/html/var/export && chown nginx:nginx /var/www/html/var/export
+su - nginx -c '/work/bin/gcsfuse '"$gke_bucket_var_export"' /var/www/html/var/export'
+
+mkdir -p /var/www/html/var/importexport && chown nginx:nginx /var/www/html/var/importexport
+su - nginx -c '/work/bin/gcsfuse '"$gke_bucket_var_importexport"' /var/www/html/var/importexport'
+
+mkdir -p /var/www/html/var/log && chown nginx:nginx /var/www/html/var/log
+su - nginx -c '/work/bin/gcsfuse '"$gke_bucket_var_log"' /var/www/html/var/log'
+
+mkdir -p /var/www/html/var/report && chown nginx:nginx /var/www/html/var/report
+su - nginx -c '/work/bin/gcsfuse '"$gke_bucket_var_report"' /var/www/html/var/report'
+
+mkdir -p /var/www/html/pub/media && chown nginx:nginx /var/www/html/pub/media
+su - nginx -c '/work/bin/gcsfuse '"$gke_bucket_pub_media"' /var/www/html/pub/media'
 
 # Set up cron
 if [[ -z "$cron_jobs" || "$cron_jobs" == "0" ]]; then

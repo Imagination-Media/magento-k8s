@@ -1,5 +1,7 @@
 #!/bin/sh
 
+chown nginx:nginx /var/www/html/var
+
 # Set up cron
 if [[ -z "$cron_jobs" || "$cron_jobs" == "0" ]]; then
   echo "No cron jobs were set"
