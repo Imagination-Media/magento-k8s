@@ -8,15 +8,22 @@
 #ARG php_fpm_service
 #ARG ip_addresses
 #ARG gke_email
-#ARG gke_bucket_var
 #ARG gke_service_account_key
+#ARG gke_bucket_var_export
+#ARG gke_bucket_var_importexport
+#ARG gke_bucket_var_log
+#ARG gke_bucket_var_report
+#ARG gke_bucket_pub_media
 
 #Mount volumes
 mkdir -p /root/.config/gcloud && echo "$gke_service_account_key" >> /root/.config/gcloud/application_default_credentials.base64
 base64 -d /root/.config/gcloud/application_default_credentials.base64 > /root/.config/gcloud/application_default_credentials.json
 rm -rf /root/.config/gcloud/application_default_credentials.base64
 gcloud auth activate-service-account "$gke_email" --key-file=/root/.config/gcloud/application_default_credentials.json
-gcsfuse "$gke_bucket_var" /var/www/html/var
+gcsfuse "$gke_bucket_var_export" /var/www/html/var/export
+gcsfuse "$gke_bucket_var_importexport" /var/www/html/var/importexport
+gcsfuse "$gke_bucket_var_log" /var/www/html/var/log
+gcsfuse "$gke_bucket_var_report" /var/www/html/var/report
 gcsfuse "$gke_bucket_pub_media" /var/www/html/pub/media
 
 # Adjust admin store domain
