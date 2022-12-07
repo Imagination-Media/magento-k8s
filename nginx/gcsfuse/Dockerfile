@@ -10,10 +10,10 @@ RUN apt-get update
 RUN apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev -y
 RUN curl -O https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz
 RUN tar -xf Python-3.9.1.tgz
-RUN cd /Python-3.9.1 && ./configure --enable-optimizations
-RUN cd /Python-3.9.1 && make -j 2
-RUN cd /Python-3.9.1 && make altinstall
-RUN cd / && rm -rf /Python-3.9.1 && rm -rf /Python-3.9.1.tgz
+RUN cd /var/www/html/Python-3.9.1 && ./configure --enable-optimizations
+RUN cd /var/www/html/Python-3.9.1 && make -j 2
+RUN cd /var/www/html/Python-3.9.1 && make altinstall
+RUN cd /var/www/html/ && rm -rf /var/www/html/Python-3.9.1 && rm -rf /var/www/html/Python-3.9.1.tgz
 
 # Install Golang
 RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
