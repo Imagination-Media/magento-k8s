@@ -39,7 +39,7 @@ StrictModes yes
 PubkeyAuthentication yes
 
 # Expect .ssh/authorized_keys2 to be disregarded by default in future.
-AuthorizedKeysFile /home/www-data/.ssh/authorized_keys
+AuthorizedKeysFile /home/nginx/.ssh/authorized_keys
 
 #AuthorizedPrincipalsFile none
 

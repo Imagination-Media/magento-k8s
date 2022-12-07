@@ -12,3 +12,5 @@
  Only the var and the media directories are shared across all the instances and any change made here out of these directories are going to be lost after a new deployment.
 
  Webroot: /var/www/html/
+
+
