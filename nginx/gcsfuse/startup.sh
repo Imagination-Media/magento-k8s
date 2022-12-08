@@ -62,18 +62,18 @@ sed -i -e "s/phpservice.namespace:9001/$php_fpm_service/g" /etc/nginx/nginx.conf
 
 # Set up ip addresses (front)
 if [ -z "${ip_addresses}" ]; then
-   sed -i -e "s/allow ipAddresses;/#allow ipAddresses;/g" /etc/nginx/nginx.conf
-   sed -i -e "s/deny all;/#deny all;/g" /etc/nginx/nginx.conf
+   echo "No storefront restriction"
 else
-    sed -i -e "s/ipAddresses/${ip_addresses}/g" /etc/nginx/nginx.conf
+    sed -i -e "s/#allow storefrontIp;/allow ${ip_addresses};/g" /etc/nginx/nginx.conf
+    sed -i -e "s/#storefrontdenyall;/deny all;/g" /etc/nginx/nginx.conf
 fi
 
 # Set up ip addresses (admin)
 if [ -z "${admin_ip_addresses}" ]; then
-   sed -i -e "s/allow adminipAddresses;/#allow adminipAddresses;/g" /etc/nginx/nginx.conf
-   sed -i -e "s/admindeny all;/#deny all;/g" /etc/nginx/nginx.conf
+   echo "No admin restriction"
 else
-    sed -i -e "s/adminipAddresses/${admin_ip_addresses}/g" /etc/nginx/nginx.conf
+    sed -i -e "s/#allow adminIp;/allow ${admin_ip_addresses};/g" /etc/nginx/nginx.conf
+    sed -i -e "s/#admindenyall;/deny all;/g" /etc/nginx/nginx.conf
 fi
 
 exec /docker-entrypoint.sh $@
