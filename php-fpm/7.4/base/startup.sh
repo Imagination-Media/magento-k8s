@@ -14,6 +14,7 @@ else
   chmod 777 /var/www/cron-jobs
   su - nginx -c 'crontab /var/www/cron-jobs'
   rm /var/www/cron-jobs
+  service cron start
 fi
 
 # Put back app/etc/env.php and app/etc/config.php to non editable
