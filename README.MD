@@ -33,10 +33,15 @@ Root access isn't allowed for SSH users. No one can login as root on the applica
 
 No instance is exposed to the internet through SSH, except the admin panel PHP-FPM pod. That's the only one instance users can SSH and check the code base.
 
+<img src="https://github.com/Imagination-Media/magento-k8s/blob/master/screenshots/ssh-delete.png" alt="Error when trying to delete vendor directory" />
+<p align="center">
+*Access denied error when trying to delete files*
+</p>
+
 ## Services
 
 <p align="left" width="100%">
-<img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/97/Elastic_NV_logo.svg/1200px-Elastic_NV_logo.svg.png" width="20%" alt="Elasticsearch Logo" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://download.logo.wine/logo/Redis/Redis-Logo.wine.png" width="18%" alt="Redis Logo" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/RabbitMQ_logo.svg/2560px-RabbitMQ_logo.svg.png" width="18%" alt="RabbitMQ Logo" />
+<img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/97/Elastic_NV_logo.svg/1200px-Elastic_NV_logo.svg.png" width="30%" alt="Elasticsearch Logo" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://download.logo.wine/logo/Redis/Redis-Logo.wine.png" width="30%" alt="Redis Logo" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/RabbitMQ_logo.svg/2560px-RabbitMQ_logo.svg.png" width="20%" alt="RabbitMQ Logo" />
 </p>
 
 These are the services required by Magento to execute. We use the official docker images, and the version of each service may vary depending on the Adobe Commerce version.
@@ -173,17 +178,17 @@ FROM ghcr.io/imagination-media/magento-k8s/nginx:latest
 
 ARG APP_ETC_ENV
 
-# Copy repository
+  # Copy repository
 COPY repository.zip /var/www/html/
 RUN unzip -q /var/www/html/repository.zip -d /var/www/html
 RUN rm -rf /var/www/html/repository.zip
 
-# Create app/etc/env.php from environment variable
+  # Create app/etc/env.php from environment variable
 RUN mkdir -p /var/www/html/app/etc
 RUN rm -rf /var/www/html/app/etc/env.php
 RUN echo "$APP_ETC_ENV" | base64 --decode > /var/www/html/app/etc/env.php
 
-# Set the permissions for the Magento directory
+  # Set the permissions for the Magento directory
 RUN cd /var/www/ && chown -R root:nginx html && chmod -R 750 html
 RUN cd /var/www/html/ && chmod -R 770 generated
 RUN cd /var/www/html/ && chmod -R 775 var
@@ -211,29 +216,29 @@ ARG SSH_ID_RSA_PRIVATE
 ARG SSH_ID_RSA_PUBLIC
 ARG APP_ETC_ENV
 
-# User root
+  # User root
 USER root
 
-# Copy authorized keys
+  # Copy authorized keys
 RUN mkdir -p /home/nginx/.ssh
 RUN echo "$SSH_AUTHORIZED_KEYS" >> /home/nginx/.ssh/authorized_keys
 RUN chown -R nginx:nginx /home/nginx/.ssh/
 RUN chmod 400 /home/nginx/.ssh/authorized_keys
 
-# Copy repository
+  # Copy repository
 COPY repository.zip /var/www/html/
 RUN unzip -q /var/www/html/repository.zip -d /var/www/html
 RUN rm -rf /var/www/html/repository.zip
 
-# Create app/etc/env.php from environment variable
+  # Create app/etc/env.php from environment variable
 RUN mkdir -p /var/www/html/app/etc
 RUN rm -rf /var/www/html/app/etc/env.php
 RUN echo "$APP_ETC_ENV" | base64 --decode > /var/www/html/app/etc/env.php
 
-# Adjust permissions
+  # Adjust permissions
 RUN chown -R nginx:nginx /var/www/html/
 
-# Set the permissions for the Magento directory
+  # Set the permissions for the Magento directory
 RUN cd /var/www/ && chown -R root:nginx html && chmod -R 750 html
 RUN cd /var/www/html/ && chmod -R 770 generated/code
 RUN cd /var/www/html/ && chmod -R 770 generated/metadata
@@ -243,13 +248,13 @@ RUN cd /var/www/html/ && chmod -R 750 app/etc
 RUN cd /var/www/html/ && chmod -R 770 app/etc/config.php
 RUN cd /var/www/html/ && chmod u+x bin/magento
 
-# This file will be allowed to be modified in order to run setup:upgrade
+  # This file will be allowed to be modified in order to run setup:upgrade
 RUN cd /var/www/html/ && chmod -R 770 app/etc/env.php
 
-# Expose SSH port
+  # Expose SSH port
 EXPOSE 22
 
-# Execute the startup bash script on the startup
+  # Execute the startup bash script on the startup
 ENTRYPOINT ["/bin/bash", "/root/startup.sh"]
 ```
 
