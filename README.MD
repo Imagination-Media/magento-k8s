@@ -157,12 +157,12 @@ The following topics are going to describe how to set up a Kubernetes infrastruc
 ## Creating base structure
 In your Github Magento code base, please create this directory structure:
 
-    ├── codebase                       # Magento codebase
-    │   ├── server                      # Our infrastructure directory
-    │   ├──├── docker            # Our images
-    │   ├──├──├──nginx      # Nginx image
-    │   ├──├──├──phpfpm   # Php-Fpm image
-    │   ├──├── k8s                 # Kubernetes scripts
+    ├── codebase
+    │   ├── server
+    │   ├──├── docker
+    │   ├──├──├──nginx
+    │   ├──├──├──phpfpm
+    │   ├──├── k8s
 
 
 The **docker** directory will host our custom images for our Magento project, and **k8s** will host the Kubernetes scripts used to set up the infrastructure.
@@ -177,17 +177,17 @@ FROM ghcr.io/imagination-media/magento-k8s/nginx:latest
 
 ARG APP_ETC_ENV
 
-# Copy repository
+  # Copy repository
 COPY repository.zip /var/www/html/
 RUN unzip -q /var/www/html/repository.zip -d /var/www/html
 RUN rm -rf /var/www/html/repository.zip
 
-# Create app/etc/env.php from environment variable
+  # Create app/etc/env.php from environment variable
 RUN mkdir -p /var/www/html/app/etc
 RUN rm -rf /var/www/html/app/etc/env.php
 RUN echo "$APP_ETC_ENV" | base64 --decode > /var/www/html/app/etc/env.php
 
-# Set the permissions for the Magento directory
+  # Set the permissions for the Magento directory
 RUN cd /var/www/ && chown -R root:nginx html && chmod -R 750 html
 RUN cd /var/www/html/ && chmod -R 770 generated
 RUN cd /var/www/html/ && chmod -R 775 var
