@@ -26,7 +26,12 @@ To determine what version of PHP, RabbitMQ, Redis, and database to use, please c
 
 <img src="https://lucid.app/publicSegments/view/aa1f2018-8849-46e9-95ae-191cc4e8f726/image.png" alt="Infrastructure diagram" />
 
-## File Permissions
+## File permissions & server access
+As an approach to maintain security and integrity across all the servers, the code base in the server is read-only, meaning SSH users can't modify anything except the pub/media and the var directories. This also prevents issues related to auto-scale and the codebase shared accross the different node pools (frontend, admin, and cron).
+
+Root access isn't allowed for SSH users. No one can login as root on the application servers.
+
+No instance is exposed to the internet through SSH, except the admin panel PHP-FPM pod. That's the only one instance users can SSH and check the code base.
 
 ## Services
 
@@ -38,6 +43,8 @@ These are the services required by Magento to execute. We use the official docke
 - [RabbitMQ](https://hub.docker.com/_/rabbitmq)
 - [Redis](https://hub.docker.com/_/redis)
 - [ElasticSearch](https://hub.docker.com/_/elasticsearch)
+
+These services aren't exposed to the internet. They are only available inside the cluster.
 
 ## Database
 
@@ -95,7 +102,8 @@ This is the welcome message when SSHing the admin pod:
 
 <img src="https://github.com/Imagination-Media/magento-k8s/blob/master/screenshots/ssh-welcome.png" alt="SSH welcome message" />
 
-#Custom Images
+
+# Custom Images
 We developed two custom images, one for NGINX and one for PHP-FPM. These images have all the required plugins, configuration, and optimization for Magento 2 websites, so all the infrastructure deployed by our solution was created based on these two images along with images for other services.
 
 ## PHP-FPM
@@ -139,9 +147,123 @@ These directories are going to be:
 Everything else, except the subdirectories inside the var directory are read only. SSH users can't modify any file or directory.
 
 # Using the template
+The following topics are going to describe how to set up a Kubernetes infrastructure using this template and automating it with your GitHub repository.
+
+## Creating base structure
+In your Github Magento code base, please create this directory structure:
+```
+Magento Code Base
+	server
+		docker
+			nginx
+			phpfpm
+			
+		k8s
+```
+
+The **docker** directory will host our custom images for our Magento project, and **k8s** will host the Kubernetes scripts used to set up the infrastructure.
+
+## Setting up images
+First we need to use setup two images, one for Nginx & Php-Fpm. They are going to be created based on our [base images](https://github.com/Imagination-Media/magento-k8s#custom-images "base images"). These images are going to have the Magento code base, the compiled static content and the PHP scripts.
+
+### Nginx
+Inside the **nginx** directory, please create a **Dockerfile** file with this content:
+```yaml
+FROM ghcr.io/imagination-media/magento-k8s/nginx:latest
+
+ARG APP_ETC_ENV
+
+# Copy repository
+COPY repository.zip /var/www/html/
+RUN unzip -q /var/www/html/repository.zip -d /var/www/html
+RUN rm -rf /var/www/html/repository.zip
+
+# Create app/etc/env.php from environment variable
+RUN mkdir -p /var/www/html/app/etc
+RUN rm -rf /var/www/html/app/etc/env.php
+RUN echo "$APP_ETC_ENV" | base64 --decode > /var/www/html/app/etc/env.php
+
+# Set the permissions for the Magento directory
+RUN cd /var/www/ && chown -R root:nginx html && chmod -R 750 html
+RUN cd /var/www/html/ && chmod -R 770 generated
+RUN cd /var/www/html/ && chmod -R 775 var
+RUN cd /var/www/html/ && chmod -R 770 pub/media
+RUN cd /var/www/html/ && chmod -R 750 app/etc/
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+The first line defines the image we are going to use for our NGINX image. We must use **ghcr.io/imagination-media/magento-k8s/nginx:latest** by default, or use  **ghcr.io/imagination-media/magento-k8s/nginx:latest-gcsfguse** if using [gcsfuse](ghcr.io/imagination-media/magento-k8s/nginx:latest "gcsfuse").
+
+This image will download the repository, install composer packages, deploy the static content files, and then compile the PHP code.
+
+The name of our image will be **ghcr.io/my-company/my-repository/nginx:myenvironment**. So, we will be generating images for each environment and use different tags for each one of these environments.
+
+### Php-Fpm
+Inside the **phpfpm** directory, please create a **Dockerfile** file with this content:
+
+```yaml
+FROM ghcr.io/imagination-media/magento-k8s/php-fpm:8.1
+
+ARG SSH_AUTHORIZED_KEYS
+ARG SSH_ID_RSA_PRIVATE
+ARG SSH_ID_RSA_PUBLIC
+ARG APP_ETC_ENV
+
+# User root
+USER root
+
+# Copy authorized keys
+RUN mkdir -p /home/nginx/.ssh
+RUN echo "$SSH_AUTHORIZED_KEYS" >> /home/nginx/.ssh/authorized_keys
+RUN chown -R nginx:nginx /home/nginx/.ssh/
+RUN chmod 400 /home/nginx/.ssh/authorized_keys
+
+# Copy repository
+COPY repository.zip /var/www/html/
+RUN unzip -q /var/www/html/repository.zip -d /var/www/html
+RUN rm -rf /var/www/html/repository.zip
+
+# Create app/etc/env.php from environment variable
+RUN mkdir -p /var/www/html/app/etc
+RUN rm -rf /var/www/html/app/etc/env.php
+RUN echo "$APP_ETC_ENV" | base64 --decode > /var/www/html/app/etc/env.php
+
+# Adjust permissions
+RUN chown -R nginx:nginx /var/www/html/
+
+# Set the permissions for the Magento directory
+RUN cd /var/www/ && chown -R root:nginx html && chmod -R 750 html
+RUN cd /var/www/html/ && chmod -R 770 generated/code
+RUN cd /var/www/html/ && chmod -R 770 generated/metadata
+RUN cd /var/www/html/ && chmod -R 777 var
+RUN cd /var/www/html/ && chmod -R 770 pub/media
+RUN cd /var/www/html/ && chmod -R 750 app/etc
+RUN cd /var/www/html/ && chmod -R 770 app/etc/config.php
+RUN cd /var/www/html/ && chmod u+x bin/magento
+
+# This file will be allowed to be modified in order to run setup:upgrade
+RUN cd /var/www/html/ && chmod -R 770 app/etc/env.php
+
+# Expose SSH port
+EXPOSE 22
+
+# Execute the startup bash script on the startup
+ENTRYPOINT ["/bin/bash", "/root/startup.sh"]
+```
+
+The first line defines the image we are going to use for our Php-Fpm image. We have different images for each PHP version, and on each version we also have a [gcsfuse version](The first line defines the image we are going to use for our NGINX image. We must use **ghcr.io/imagination-media/magento-k8s/nginx:latest** by default, or use  **ghcr.io/imagination-media/magento-k8s/nginx:latest-gcsfguse** if using [gcsfuse](ghcr.io/imagination-media/magento-k8s/nginx:latest "gcsfuse") of it. So we have for example **ghcr.io/imagination-media/magento-k8s/php-fpm:8.1-gcsfuse** for PHP 8.1, and **ghcr.io/imagination-media/magento-k8s/php-fpm:8.1-gcsfuse** for PHP 8.1 with gcsfuse. To know more about the support versions please check https://github.com/Imagination-Media/magento-k8s#php-fpm.
+
+This image will download the repository, install composer packages, deploy the static content files, and then compile the PHP code.
+
+The name of our image will be **ghcr.io/my-company/my-repository/php-fpm:myenvironment**. So, we will be generating images for each environment and use different tags for each one of these environments.
+
 ## K8s Files
 
 ## GitHub configuration
 ### Actions
 ### Environments
 ### Secrets
+
+# Customizing images
