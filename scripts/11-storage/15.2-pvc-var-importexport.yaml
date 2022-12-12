@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-var-importexport
+  namespace: magento-demo-production
+spec:
+  volumeName: pv-var-importexport
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

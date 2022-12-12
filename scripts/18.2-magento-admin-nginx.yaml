@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magento-admin-nginx-deployment
+  namespace: magento-demo-production
+  annotations:
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magento-admin-nginx
+  template:
+    metadata:
+      labels:
+        app: magento-admin-nginx
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+    spec:
+      containers:
+        - name: magento-admin-nginx
+          image: ghcr.io/imagination-media/magento-demo-open-source/nginx:production
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          envFrom:
+            - configMapRef:
+                name: admin-configmap-nginx
+          resources:
+            limits:
+              memory: '2000Mi'
+              cpu: '600m'
+            requests:
+              memory: '2000Mi'
+              cpu: '600m'
+          ports:
+            - name: liveness-port
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /index.php
+              port: liveness-port
+            initialDelaySeconds: 30
+            periodSeconds: 60
+          livenessProbe:
+            httpGet:
+              path: /index.php
+              port: liveness-port
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 60
+      imagePullSecrets:
+        - name: dockerconfigjson-github-com
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Equal"
+          value: "arm64"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'cloud.google.com/gke-nodepool'
+                    operator: In
+                    values:
+                      - nginx-phpfpm
+                  - key: 'kubernetes.io/arch'
+                    operator: In
+                    values:
+                      - arm64
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento-admin-nginx-service
+  namespace: magento-demo-production
+  labels:
+    app: magento-admin-nginx
+spec:
+  selector:
+    app: magento-admin-nginx
+  ports:
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 80
+      name: http
+    - protocol: 'TCP'
+      port: 443
+      targetPort: 443
+      name: https
+  type: ClusterIP

@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clean-nodes-configmap
+  namespace: magento-demo-production
+data:
+  GCP_SERVICE_ACCOUNT_KEY: "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgInByb2plY3RfaWQiOiAibWFnZW50by0yLWRlbW8tMzY2MDE4IiwKICAicHJpdmF0ZV9rZXlfaWQiOiAiYmI2MWM0MDA5Njk4NTQ5Nzc3NjI0MTgxNzc5Yjg2NmVkZWM4NGI0NiIsCiAgInByaXZhdGVfa2V5IjogIi0tLS0tQkVHSU4gUFJJVkFURSBLRVktLS0tLVxuTUlJRXZBSUJBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS1l3Z2dTaUFnRUFBb0lCQVFDRXhZMTB1RnpTQ0sydlxuRjRwRHJ5VjkrOHVhNFNveVZ2ZnlwRGNPY2VKM2VveWxtSnU2bCttMUtZbC9TQk94T1JqU256aHNLQ2Nzem9DQVxuSTUvQVNrVE5PVllnRjdqbWxkR3BMbDJ1MS9CK05TWE52N2lDRXkrekJQSHg3dGE0cDBzS3JuNEllclpTcCt3Ulxuck9pc0hKWnozLzlQL0tON3NhZUE2ems3Z2dPMktQQlhoSTJBYUpnL3hlSlBxMk9zN0QyZE12NGE5NXE2M3dRVVxuTFJrSTFIOVhRa0lCK01Fa2ZhS1YxaDlaL3lXV2o1dU9PdEl4WG50ZWhoT0JYTHNaQmtEMm9CMng4L1lpV1l1MVxuc3NwKy8zNWFXY2E4WGVwbk9Od3Y4cEYwM0lMWi9MOWVXWUsvV1ZZR0p0TjVORjd5Y0VoM3YwdnJTTmxsMkFLTVxudU45ZThXUDNBZ01CQUFFQ2dnRUFEdzdRcDRlRDVNRGQ0ZGtMbktMYWlscVU1dHN1aS9NQ2FvbTc3TVFodm1jdlxuQXdEaHpkeGpiR0VVNzZpSnJkOGZOT2xMTkRPc1F3LzdKdUtPRmFMV3JCSnY5WEo3VFR0NTdIUU9aVUZSb2NsVFxuOWtKamQwSnh5eDNUeXNVZStSRGxib1ZjL3pLR1J3TGdhbk52d3BxamFEK09seVc4bDNvTjJJM1U1SU9FVHVqL1xuNGdML1YyM2l5WXp0c2dlN1NScGZ1MFo0T2h0cFk4bys0RU9HMk93c1E1bHdUY3JEUjBUNnpLejRDZlUwaXVidFxuTmJQNE1NRmlPYmFrQkxyS0Q4OWlRWDBWRG1LeWhXaGE3cmFPU2phSDNwVW1qZk0zUXlZdFNCRzFSdGJmTFllK1xuTTZLWW56SFRhaDM3ZC91clppd3k4YTBSQ3IvUEhMcGhXVEVYa2ZoK2NRS0JnUUM1ZW5pdjE0M2RKS0g2Q0lqclxua1pKV3M5SlpIWHRoaStzNlhNeHA0eGdYMjNYMUJnVnJTdVFqT0VWanJBZktFM3d1bVRYMGZGMGczd1dVaTZ1bFxubFpSemZ0a0tKWVNFU21Oc0V5M0hQY25QRElvYmhYYTExVUdKYTkvdjJVcGZUVk5zTEdEWk1QdHlZci9FQzFJeVxubm4ycGtKam5XZVBFcm1xWE8vS1JxU2taT3dLQmdRQzNRT0JnTHFJSDdxeFpTUW1JaXFpRVgwR0dpOHFXQmFnaFxuRVd0cU9VOWpHeElWckVoWlAwbS95UEUzYnlWbXduSU1BNXJnNVkrZEJyZHQ5NEEzblNoa1M5UXJNY3FBcG5qRFxua1VyLzk3b2FJUjJWcVZSSEVKTENXZTdEd1grYnNiWjl3OEFxN2ZhL1Nyam8rRFlrZFI1SFF5NGJNRTV5Q1k1U1xuR0dsVURvelVkUUtCZ0ZpT3hDN1pFWEFEL0o2QUVyZSs4b3NaSXBiUC84ZnNZV3lsUUNoU2VIOXpsbGRkLzVwaFxuMEptTVZYMG9kek9ocUFvcnR0bzd3czllRExFSEd2WmRlOXJGTnVXa1VpaER5RUtpeVptMnc3TnEva256cUdGYlxuS0Fad0RpVGJyNm5mSnJTZ1g4RnpwS3JSd1ZQZVArblJTSmg4WkxVWmN5bkdTVGhhTkJBZUgzUmZBb0dBVlczUlxuTEFXUlU5RllWMmROSW5KQmpUUTYvOVk3WXlUUDlGcUNrTXFXejhUVzhYT1hac095UmM0UFphQlM5MHkramd0QVxuTUlmVUk0ZjJDelhPZUI2enJjNEw0dmNiU0U1VERoaTF0ZzV1bTYvRWN2aTFhVXU0bnhIOTFSUm53TlZnRmRFalxuek4rU29DcmRlUDM5ZjVGNXhBNzFkNGRWaXFRWnpQdkVYb05KOCtFQ2dZQWtTaC90RVByRzZoRUtNbWN0eUhKaVxuRFBDZUVKSVFZRDZkbWNjMERnaXlESEMvSUlhaE5kU3haQzMxWk02RE04bCtmMFJsZ0NtRVFqUllQUk1jTnRZZFxuanV1U0NpaGFZOU5ndzVHUFFUdUpPVG1tQzQ2NHB6eE1mYXpFbmxjR1JCYXVZdmtMd0NyY2JMVEFSQXpXR3F2TVxuV2JCaVRZTVFJL3F6blV1NWZEc1JOUT09XG4tLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tXG4iLAogICJjbGllbnRfZW1haWwiOiAibWFnZW50by1kZW1vLWNsdXN0ZXItc2VydmljZS1hQG1hZ2VudG8tMi1kZW1vLTM2NjAxOC5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsCiAgImNsaWVudF9pZCI6ICIxMTEzMjI1NjU2ODM1Njk3OTQwNjUiLAogICJhdXRoX3VyaSI6ICJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20vby9vYXV0aDIvYXV0aCIsCiAgInRva2VuX3VyaSI6ICJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsCiAgImF1dGhfcHJvdmlkZXJfeDUwOV9jZXJ0X3VybCI6ICJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9vYXV0aDIvdjEvY2VydHMiLAogICJjbGllbnRfeDUwOV9jZXJ0X3VybCI6ICJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9yb2JvdC92MS9tZXRhZGF0YS94NTA5L21hZ2VudG8tZGVtby1jbHVzdGVyLXNlcnZpY2UtYSU0MG1hZ2VudG8tMi1kZW1vLTM2NjAxOC5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIKfQo="
+  GCP_CLUSTER: "demo-environment"
+  GCP_ZONE: "us-central1-a"
+  GCP_PROJECT: "magento-2-demo-366018"
+  GCP_GKE_NAMESPACE: "magento-demo-production"
+  GCP_EMAIL: "magento-demo-cluster-service-a@magento-2-demo-366018.iam.gserviceaccount.com"
+  GCP_SSH_USER: "gkeadm"
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clean-nodes-cron-job
+  namespace: magento-demo-production
+  annotations:
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  schedule: "40 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: clean-nodes-pod
+              image: ghcr.io/imagination-media/gcp-kubernetes-clean-nodes/gcp-kubernetes-clean-nodes:latest
+              imagePullPolicy: Always
+              envFrom:
+              - configMapRef:
+                  name: clean-nodes-configmap
+          restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: dockerconfigjson-github-com
+#          tolerations:
+#            - key: "kubernetes.io/arch"
+#              operator: "Equal"
+#              value: "arm64"
+#              effect: "NoSchedule"
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: 'cloud.google.com/gke-nodepool'
+                        operator: In
+                        values:
+                          - default-pool
+                      - key: 'kubernetes.io/arch'
+                        operator: In
+                        values:
+                          - arm64

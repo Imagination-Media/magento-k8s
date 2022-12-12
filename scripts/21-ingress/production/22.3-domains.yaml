@@ -1,0 +1,29 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: admin-certificate
+  namespace: magento-demo-production
+spec:
+  commonName: admin-magento-open-source.imaginationmedia.com
+  dnsNames:
+    - admin-magento-open-source.imaginationmedia.com
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  secretName: admin-certificate
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: frontend-certificate
+  namespace: magento-demo-production
+spec:
+  commonName: magento-open-source.imaginationmedia.com
+  dnsNames:
+    - magento-open-source.imaginationmedia.com
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  secretName: frontend-certificate

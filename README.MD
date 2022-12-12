@@ -40,9 +40,7 @@ Access denied error when trying to delete files
 
 ## Services
 
-<p align="left" width="100%">
-<img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/97/Elastic_NV_logo.svg/1200px-Elastic_NV_logo.svg.png" width="30%" alt="Elasticsearch Logo" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://download.logo.wine/logo/Redis/Redis-Logo.wine.png" width="30%" alt="Redis Logo" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/RabbitMQ_logo.svg/2560px-RabbitMQ_logo.svg.png" width="20%" alt="RabbitMQ Logo" />
-</p>
+<img src="https://github.com/Imagination-Media/magento-k8s/blob/master/screenshots/services.png" alt="Node Pools" />
 
 These are the services required by Magento to execute. We use the official docker images, and the version of each service may vary depending on the Adobe Commerce version.
 - [RabbitMQ](https://hub.docker.com/_/rabbitmq)
@@ -80,7 +78,7 @@ We use [Envoy Contour](https://projectcontour.io/) as the load balancer and prox
 
 With Envoy we route the traffic to the admin and storefront instances, and it's used as the load balancer instead of the default load balancer offered by the cloud providers.
 
-To set up Envoy we run the https://github.com/Imagination-Media/magento-k8s/scripts/ingress/production/21-contour.yaml script.
+To set up Envoy we run the https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/21-contour.yaml script.
 
 Then, we use https://github.com/Imagination-Media/magento-k8s/scripts/ingress/production/23-ingress.yaml to define the domains that are going to be managed by Envoy and what k8s service is going to be used to serve each one of them.
 
@@ -177,17 +175,17 @@ FROM ghcr.io/imagination-media/magento-k8s/nginx:latest
 
 ARG APP_ETC_ENV
 
-  # Copy repository
+# Copy repository
 COPY repository.zip /var/www/html/
 RUN unzip -q /var/www/html/repository.zip -d /var/www/html
 RUN rm -rf /var/www/html/repository.zip
 
-  # Create app/etc/env.php from environment variable
+# Create app/etc/env.php from environment variable
 RUN mkdir -p /var/www/html/app/etc
 RUN rm -rf /var/www/html/app/etc/env.php
 RUN echo "$APP_ETC_ENV" | base64 --decode > /var/www/html/app/etc/env.php
 
-  # Set the permissions for the Magento directory
+# Set the permissions for the Magento directory
 RUN cd /var/www/ && chown -R root:nginx html && chmod -R 750 html
 RUN cd /var/www/html/ && chmod -R 770 generated
 RUN cd /var/www/html/ && chmod -R 775 var
@@ -215,29 +213,29 @@ ARG SSH_ID_RSA_PRIVATE
 ARG SSH_ID_RSA_PUBLIC
 ARG APP_ETC_ENV
 
-  # User root
+# User root
 USER root
 
-  # Copy authorized keys
+# Copy authorized keys
 RUN mkdir -p /home/nginx/.ssh
 RUN echo "$SSH_AUTHORIZED_KEYS" >> /home/nginx/.ssh/authorized_keys
 RUN chown -R nginx:nginx /home/nginx/.ssh/
 RUN chmod 400 /home/nginx/.ssh/authorized_keys
 
-  # Copy repository
+# Copy repository
 COPY repository.zip /var/www/html/
 RUN unzip -q /var/www/html/repository.zip -d /var/www/html
 RUN rm -rf /var/www/html/repository.zip
 
-  # Create app/etc/env.php from environment variable
+# Create app/etc/env.php from environment variable
 RUN mkdir -p /var/www/html/app/etc
 RUN rm -rf /var/www/html/app/etc/env.php
 RUN echo "$APP_ETC_ENV" | base64 --decode > /var/www/html/app/etc/env.php
 
-  # Adjust permissions
+# Adjust permissions
 RUN chown -R nginx:nginx /var/www/html/
 
-  # Set the permissions for the Magento directory
+# Set the permissions for the Magento directory
 RUN cd /var/www/ && chown -R root:nginx html && chmod -R 750 html
 RUN cd /var/www/html/ && chmod -R 770 generated/code
 RUN cd /var/www/html/ && chmod -R 770 generated/metadata
@@ -247,13 +245,13 @@ RUN cd /var/www/html/ && chmod -R 750 app/etc
 RUN cd /var/www/html/ && chmod -R 770 app/etc/config.php
 RUN cd /var/www/html/ && chmod u+x bin/magento
 
-  # This file will be allowed to be modified in order to run setup:upgrade
+# This file will be allowed to be modified in order to run setup:upgrade
 RUN cd /var/www/html/ && chmod -R 770 app/etc/env.php
 
-  # Expose SSH port
+# Expose SSH port
 EXPOSE 22
 
-  # Execute the startup bash script on the startup
+# Execute the startup bash script on the startup
 ENTRYPOINT ["/bin/bash", "/root/startup.sh"]
 ```
 
@@ -263,11 +261,86 @@ This image will download the repository, install composer packages, deploy the s
 
 The name of our image will be **ghcr.io/my-company/my-repository/php-fpm:myenvironment**. So, we will be generating images for each environment and use different tags for each one of these environments.
 
-## K8s Files
+## K8S Files
+On this section we are going to describe the scripts involved on this infrastructure, what each script is used for, and how to deploy them.
+
+All the Kubernetes scripts are inside the https://github.com/Imagination-Media/magento-k8s/scripts/ folder.
+
+### Namespace
+The namespace as the name suggests, it's a namespace, or in other words, an isolated environment where things get deployed. For your project, we suggest having a different namespace per environment if they are going to share the same Kubernetes cluster.
+
+So the first script we must run is https://github.com/Imagination-Media/magento-k8s/scripts/1-namespace.yaml.
+
+```ssh
+kubectl apply -f=scripts/1-namespace.yaml
+```
+
+### Configmap
+[Configmaps](https://kubernetes.io/docs/concepts/configuration/configmap/ "Configmaps") are values that are going to be used as environment variables in our pods. Our images require a couple of values to be set, to define things like the crontab if we run or not setup:upgrade, if we enable or not SSH, etc.
+
+In the https://github.com/Imagination-Media/magento-k8s/scripts/2-configmap.yaml file, we create these configmaps for all of our application pods. So, we have different configmaps for the NGINX and PHP-FPM pods for the admin, for the storefront, and also for the cron.
+
+- **admin-configmap-phpfpm** - PHP-FPM admin panel configmap.
+- **admin-configmap-nginx** - NGINX admin panel configmap.
+- **cron-configmap-phpfpm** - PHP-FPM cron configmap.
+- **front-configmap-phpfpm** - PHP-FPM storefront configmap.
+- **front-configmap-phpfpm** - PHP-FPM storefront configmap.
+
+These are the required values required by each configmap type:
+#### PHP-FPM
+- **setup_upgrade** - Set 1 or 0 to define if we will run the setup:upgrade command during the pod stand-up. If this option is set to 1, the pod will run setup:upgrade, di:compile, and then deploy:static:content.
+- **magento_static_content_jobs** - number of simultaneous jobs that are going to run when running the deploy static content command. This option is only used if the **setup_upgrade** option was set to 1.
+- **environment_name** - This variable is just used to help us to identify what environment is this environment,
+- **enable_ssh** - This option accepts 1 or 0 as the value, and it's used to define if we will initialize the SSH service or not for this pod.
+- **cron_jobs** - This variable expects a base64 encoded value with the crontab configuration. This variable is mainly used by the cron PHP-FPM pod, to execute the Magento cron. So, we will always have here the Magento cron job along with any other cron job you may need to execute in your application. To have the Magento cron, we will have something like this as the original value:
+
+```cron
+* * * * * php /var/www/html/bin/magento cron:run > /var/www/html/var/log/cron.log
+```
+
+And then, the base64 value will be:
+```
+KiAqICogKiAqIHBocCAvdmFyL3d3dy9odG1sL2Jpbi9tYWdlbnRvIGNyb246cnVuID4gL3Zhci93d3cvaHRtbC92YXIvbG9nL2Nyb24ubG9nCg==
+```
+
+#### NGINX
+- **admin_domain** - The domain where the Magento admin panel is going to be served. For example, ***admin-magento-open-source.imaginationmedia.com***.
+- **frontend_domain** - The domain where the Magento storefront is going to be served. For example, ***admin-magento-open-source.imaginationmedia.com***.
+- **admin_store** - Store code used by the admin store in Magento. By default, it's always ***admin***.
+- **frontend_store** - Store code used by the storefront store in Magento. For example, ***store1***.
+- **magento_mode** - Accepts the values 1 or 0, and it's used to define if Magento is running in production mode.
+- **php_fpm_service** - This is the variable where we define what the PHP-FPM service NGINX is going to use to process any PHP file. As we consistently deployed a PHP-FPM pod along with an NGINX pod, NGINX is just the web server, and any PHP code will be PHP-FPM's pod responsibility. So, on this variable, we will have something like ***magento-admin-phpfpm-service.magento-demo-production:9001*** as the value. It's the name of the service + the namespace + the port. The port will always be ***9001***, but the name of the service and the namespace may vary depending on your configuration.
+
+#### Gcsfuse
+If you are using gcsfuse to mount the volumes, you will also need to set up a couple of extra variables.
+
+You first need to generate a service account key from your GCP project, which will be used to mount the Cloud Storage volumes.
+
+Once you have the service account key, these are the variables we are going to set up:
+
+- **gke_email** - The service account key email address.
+- **gke_service_account_key** - The base64 encoded service account key.
+- **gke_bucket_var_export** - The name of your Cloud storage bucket to mount the ***var/export*** directory.
+- **gke_bucket_var_report** - The name of your Cloud storage bucket to mount the ***var/report*** directory.
+- **gke_bucket_var_importexport** - The name of your Cloud storage bucket to mount the ***var/importexport*** directory.
+- **gke_bucket_var_log** - The name of your Cloud storage bucket to mount the ***var/log*** directory.
+- **gke_bucket_pub_media** - The name of your Cloud storage bucket to mount the ***pub/media*** directory.
+
+### Image Secret
+### Database
+### Ingress
+#### Envoy
+#### SSL
+### Storefront
+### Admin
+### Cron
+### Using the services
 
 ## GitHub configuration
-### Actions
+
 ### Environments
 ### Secrets
+### Actions
+
 
 # Customizing images
