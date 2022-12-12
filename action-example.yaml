@@ -1,0 +1,212 @@
+name: Deploy production environment
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  generate_files:
+    name: Compile Code & Static Content
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: imagick, curl, intl, zip, gmp
+
+      - name: Composer install
+        run: composer install --no-dev --ignore-platform-reqs
+
+      - name: Compile PHP code
+        run: php bin/magento setup:di:compile
+
+      - name: Deploy static content
+        run: php bin/magento setup:static-content:deploy -f --jobs 4
+
+      - name: Composer autoload
+        run: composer dump-autoload -o
+
+      - name: Zip repository
+        run: zip repository.zip ./* -r -q
+
+      - name: Save repository
+        uses: actions/upload-artifact@v3
+        with:
+          name: magento_demo_production_repository
+          path: repository.zip
+          retention-days: 1
+
+  nginx:
+    name: NGINX Image (arm64)
+    runs-on: ubuntu-latest
+    environment: Production
+    needs: [generate_files]
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Download repository
+        uses: actions/download-artifact@v3
+        with:
+          name: magento_demo_production_repository
+          path: server/docker/nginx
+
+      - name: Create NGINX image
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        env:
+          SSH_AUTHORIZED_KEYS: ${{ secrets.SSH_AUTHORIZED_KEYS }}
+          SSH_CONFIG: ${{ secrets.SSH_CONFIG }}
+          IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
+          APP_ETC_ENV: ${{ secrets.APP_ETC_ENV }}
+          GKE_SERVICE_ACCOUNT_KEY: ${{ secrets.GKE_SERVICE_ACCOUNT_KEY }}
+        with:
+          name: imagination-media/magento-demo-open-source/nginx
+          username: igor-imaginemage
+          password: ${{ secrets.NODE_AUTH_TOKEN }}
+          registry: ghcr.io
+          tags: ${{ secrets.IMAGE_TAG }}
+          workdir: server/docker/nginx
+          buildargs: SSH_AUTHORIZED_KEYS,SSH_CONFIG,APP_ETC_ENV,GKE_SERVICE_ACCOUNT_KEY
+          platforms: linux/arm64
+
+  phpfpm:
+    name: Php-Fpm Image (arm64)
+    runs-on: ubuntu-latest
+    environment: Production
+    needs: [generate_files]
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Download repository
+        uses: actions/download-artifact@v3
+        with:
+          name: magento_demo_production_repository
+          path: server/docker/phpfpm
+
+      - name: Create Php-Fpm image
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        env:
+          SSH_AUTHORIZED_KEYS: ${{ secrets.SSH_AUTHORIZED_KEYS }}
+          SSH_CONFIG: ${{ secrets.SSH_CONFIG }}
+          IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
+          APP_ETC_ENV: ${{ secrets.APP_ETC_ENV }}
+          GKE_SERVICE_ACCOUNT_KEY: ${{ secrets.GKE_SERVICE_ACCOUNT_KEY }}
+        with:
+          name: imagination-media/magento-demo-open-source/php-fpm
+          username: igor-imaginemage
+          password: ${{ secrets.NODE_AUTH_TOKEN }}
+          registry: ghcr.io
+          tags: ${{ secrets.IMAGE_TAG }}
+          workdir: server/docker/phpfpm
+          buildargs: SSH_AUTHORIZED_KEYS,SSH_CONFIG,APP_ETC_ENV,GKE_SERVICE_ACCOUNT_KEY
+          platforms: linux/arm64
+
+  admin_panel_phpfpm:
+    name: Deploy Admin PHP-FPM
+    runs-on: ubuntu-latest
+    needs: [ nginx, phpfpm ]
+    steps:
+      - name: Restart K8s Deployment
+        uses: ameydev/gke-kubectl-action@master
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          CLUSTER_NAME: demo-environment
+          ZONE_NAME: us-central1-a
+        with:
+          args: rollout restart deployment magento-admin-phpfpm-deployment -n=magento-demo-production
+
+  admin_panel_nginx:
+    name: Deploy Admin Nginx
+    runs-on: ubuntu-latest
+    needs: [ nginx, phpfpm ]
+    steps:
+      - name: Restart K8s Deployment
+        uses: ameydev/gke-kubectl-action@master
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          CLUSTER_NAME: demo-environment
+          ZONE_NAME: us-central1-a
+        with:
+          args: rollout restart deployment magento-admin-nginx-deployment -n=magento-demo-production
+
+  cron:
+    name: Deploy Cron
+    runs-on: ubuntu-latest
+    needs: [ nginx, phpfpm ]
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Restart K8s Deployment
+        uses: ameydev/gke-kubectl-action@master
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          CLUSTER_NAME: demo-environment
+          ZONE_NAME: us-central1-a
+        with:
+          args: delete -f=server/k8s/production/19-magento-cron-phpfpm.yaml && sleep 30s && kubectl apply -f=server/k8s/production/19-magento-cron-phpfpm.yaml
+
+  storefront_phpfpm:
+    name: Deploy Storefront PHP-FPM
+    runs-on: ubuntu-latest
+    needs: [ nginx, phpfpm ]
+    steps:
+      - name: Restart K8s Deployment
+        uses: ameydev/gke-kubectl-action@master
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          CLUSTER_NAME: demo-environment
+          ZONE_NAME: us-central1-a
+        with:
+          args: rollout restart deployment magento-front-phpfpm-deployment -n=magento-demo-production
+
+  storefront_nginx:
+    name: Deploy Storefront Nginx
+    runs-on: ubuntu-latest
+    needs: [ nginx, phpfpm ]
+    steps:
+      - name: Restart K8s Deployment
+        uses: ameydev/gke-kubectl-action@master
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          CLUSTER_NAME: demo-environment
+          ZONE_NAME: us-central1-a
+        with:
+          args: rollout restart deployment magento-front-nginx-deployment -n=magento-demo-production
+
+  notification:
+    name: Notify to test
+    runs-on: ubuntu-latest
+    needs: [ admin_panel_phpfpm, admin_panel_nginx, cron, storefront_phpfpm, storefront_nginx ]
+    steps:
+      - name: Notify on slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: 'good'
+          SLACK_ICON_EMOJI: ':bell:'
+          SLACK_MESSAGE: 'Magento Open-Source Demo successfully deployed! :rocket:'
+          SLACK_TITLE: Magento Open-Source Demo (https://magento-open-source.imaginationmedia.com)
+          SLACK_USERNAME: Magento Open-Source Demo
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          MSG_MINIMAL: true
