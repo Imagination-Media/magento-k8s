@@ -80,7 +80,7 @@ With Envoy we route the traffic to the admin and storefront instances, and it's 
 
 To set up Envoy we run the https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/21-contour.yaml script.
 
-Then, we use https://github.com/Imagination-Media/magento-k8s/scripts/ingress/production/23-ingress.yaml to define the domains that are going to be managed by Envoy and what k8s service is going to be used to serve each one of them.
+Then, we use https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/23-ingress.yaml to define the domains that are going to be managed by Envoy and what k8s service is going to be used to serve each one of them.
 
 ## SSL Certificates
 
@@ -459,6 +459,9 @@ kubectl apply -f=scripts/20.2-magento-front-nginx.yaml
 kubectl apply -f=scripts/20.3-magento-front-phpfpm-hpa.yaml
 kubectl apply -f=scripts/20.4-magento-front-phpfpm-hpa.yaml
 ```
+
+### Clean Nodes
+We have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-clean-nodes-cron.yaml script which deploys our https://github.com/Imagination-Media/gcp-kubernetes-clean-nodes script (only for Google Cloud projects) which is used to clean up any temporary data and files from Kubernetes nodes.
 
 ### Using the services
 To use the Redis, ElasticSearch, RabbitMQ and any service deployed by our Kubernetes scripts we always use as the host the name of the service + the namespace.
