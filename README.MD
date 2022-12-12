@@ -457,7 +457,7 @@ We have https://github.com/Imagination-Media/magento-k8s/scripts/20.3-magento-fr
 kubectl apply -f=scripts/20.1-magento-front-phpfpm.yaml
 kubectl apply -f=scripts/20.2-magento-front-nginx.yaml
 kubectl apply -f=scripts/20.3-magento-front-phpfpm-hpa.yaml
-kubectl apply -f=scripts/20.4-magento-front-phpfpm-nginx.yaml
+kubectl apply -f=scripts/20.4-magento-front-phpfpm-hpa.yaml
 ```
 
 ### Using the services
