@@ -9,6 +9,8 @@ RUN apt-get install -y git
 RUN apt-get install -y openssh-server
 RUN apt-get install -y cron
 RUN apt-get install -y bash-completion
+RUN apt-get install -y mariadb-client
+RUN apt-get install -y pv
 
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
