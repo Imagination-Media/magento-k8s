@@ -61,9 +61,9 @@ if [ "$isArch" = "$archCode" ]; then
 else
   tar -xzf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian
 fi
-cp /tmp/sourceguardian/ixed.8.1.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
-chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin
-echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.8.1.lin' > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
+cp /tmp/sourceguardian/ixed.7.4.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.7.4.lin
+chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.7.4.lin
+echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.7.4.lin' > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
 
 # Initialize the open ssh server
 if [[ -z "$enable_ssh" || "$enable_ssh" == "0" ]]; then
