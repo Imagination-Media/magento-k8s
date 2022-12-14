@@ -267,12 +267,12 @@ The name of our image will be **ghcr.io/my-company/my-repository/php-fpm:myenvir
 ## K8S Files
 On this section we are going to describe the scripts involved on this infrastructure, what each script is used for, and how to deploy them.
 
-All the Kubernetes scripts are inside the https://github.com/Imagination-Media/magento-k8s/scripts/ folder.
+All the Kubernetes scripts are inside the https://github.com/Imagination-Media/magento-k8s/tree/master/scripts folder.
 
 ### Namespace
 The namespace as the name suggests, it's a namespace, or in other words, an isolated environment where things get deployed. For your project, we suggest having a different namespace per environment if they are going to share the same Kubernetes cluster.
 
-So the first script we must run is https://github.com/Imagination-Media/magento-k8s/scripts/1-namespace.yaml.
+So the first script we must run is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/1-namespace.yaml.
 
 ```ssh
 kubectl apply -f=scripts/1-namespace.yaml
@@ -281,7 +281,7 @@ kubectl apply -f=scripts/1-namespace.yaml
 ### Configmap
 [Configmaps](https://kubernetes.io/docs/concepts/configuration/configmap/ "Configmaps") are values that are going to be used as environment variables in our pods. Our images require a couple of values to be set, to define things like the crontab if we run or not setup:upgrade, if we enable or not SSH, etc.
 
-In the https://github.com/Imagination-Media/magento-k8s/scripts/2-configmap.yaml file, we create these configmaps for all of our application pods. So, we have different configmaps for the NGINX and PHP-FPM pods for the admin, for the storefront, and also for the cron.
+In the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/2-configmap.yaml file, we create these configmaps for all of our application pods. So, we have different configmaps for the NGINX and PHP-FPM pods for the admin, for the storefront, and also for the cron.
 
 - **admin-configmap-phpfpm** - PHP-FPM admin panel configmap.
 - **admin-configmap-nginx** - NGINX admin panel configmap.
@@ -334,7 +334,7 @@ Once you have the service account key, these are the variables we are going to s
 ### Services
 These are the scripts responsible to stand-up the services used by Magento.
 #### Redis for FPC (Full Page Cache)
-Redis is going to be used as the service to store the Magento Full Page Cache, and we deploy it using the scripts https://github.com/Imagination-Media/magento-k8s/scripts/3-redis-fpc-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/scripts/6-redis-fpc-service.yaml.
+Redis is going to be used as the service to store the Magento Full Page Cache, and we deploy it using the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/3-redis-fpc-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/6-redis-fpc-service.yaml.
 
 ```ssh
 kubectl apply -f=scripts/3-redis-fpc-deployment.yaml
@@ -344,7 +344,7 @@ kubectl apply -f=scripts/6-redis-fpc-service.yaml
 #### Elasticsearch
 Magento uses [ElasticSearch](https://experienceleague.adobe.com/docs/commerce-operations/installation-guide/prerequisites/search-engine/overview.html "ElasticSearch") to index search results, layered navigation filters, etc.
 
-To deploy ElasticSearch we use the scripts https://github.com/Imagination-Media/magento-k8s/scripts/4-elasticsearch-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/scripts/7-elasticsearch-service.yaml.
+To deploy ElasticSearch we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/4-elasticsearch-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/7-elasticsearch-service.yaml.
 
 ```ssh
 kubectl apply -f=scripts/4-elasticsearch-deployment.yaml
@@ -354,7 +354,7 @@ kubectl apply -f=scripts/7-elasticsearch-service.yaml
 #### RabbitMQ
 Magento uses [RabbitMQ](https://experienceleague.adobe.com/docs/commerce-operations/installation-guide/prerequisites/rabbitmq.html "RabbitMQ") for asynchronous jobs.
 
-To deploy RabbitMQ we use the scripts https://github.com/Imagination-Media/magento-k8s/scripts/5-rabbitmq-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/scripts/8-rabbitmq-service.yaml.
+To deploy RabbitMQ we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/5-rabbitmq-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/8-rabbitmq-service.yaml.
 
 ```ssh
 kubectl apply -f=scripts/5-rabbitmq-deployment.yaml
@@ -366,7 +366,7 @@ We use Redis for the customer and admin sessions. Redis has a better performance
 
 We can use one of the AWS, GPC, Azure services to spin up a Redis instance for sessions, because they are data we can't lose in case of a pod restart, they should be a persistent volume.
 
-But in case you also want to deploy it as a Kubernetes pod we can use the https://github.com/Imagination-Media/magento-k8s/scripts/9-session/9-redis-sessions.yaml script.
+But in case you also want to deploy it as a Kubernetes pod we can use the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/9-session/9-redis-sessions.yaml script.
 
 ```ssh
 kubectl apply -f=scripts/9-session/9-redis-sessions.yaml
@@ -377,17 +377,17 @@ We use [GitHub's container registry](https://docs.github.com/en/packages/working
 
 Kubernetes has [this guide](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ "this guide") that explains how to pull images from a private registry.
 
-Once we generate the token we can have an image script like https://github.com/Imagination-Media/magento-k8s/scripts/17-image-secret.yaml.
+Once we generate the token we can have an image script like https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/17-image-secret.yaml.
 
 ### Database
-If you are running a development environment you can deploy a database pod within a Kubernetes service using the https://github.com/Imagination-Media/magento-k8s/scripts/10-database/10-database.yaml script as an example.
+If you are running a development environment you can deploy a database pod within a Kubernetes service using the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/10-database/10-database.yaml script as an example.
 
 The database name will be ***magento***, the password for the root user is going to be ***root***, and to access the database the host will be ***database-service.my-namespace-name*** on the port 33006.
 
 ***For production environments please use of the one services provided by your cloud provider, like Cloud SQL (GCP), RDS (AWS), etc. These services provide multi-cluster environments that perform a lot better than compared to a single pod database, they also manage backups, etc.***
 
 ### Ingress
-As the Magento application has to exposed to the internet (the admin and the storefront), we must have a [Kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/ "Kubernetes ingress") to expose the services. On https://kubernetes.io/docs/concepts/services-networking/ingress/ we described our strategy to proxy this application, and to deploy the ingress service and its configuration we use the directories inside https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/.
+As the Magento application has to exposed to the internet (the admin and the storefront), we must have a [Kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/ "Kubernetes ingress") to expose the services. On https://kubernetes.io/docs/concepts/services-networking/ingress/ we described our strategy to proxy this application, and to deploy the ingress service and its configuration we use the directories inside https://github.com/Imagination-Media/magento-k8s/tree/master/scripts/21-ingress.
 
 We have two directories there, **local** and **production**. One, to be used for local environments. and the other one for production environments.
 
@@ -429,7 +429,7 @@ The admin panel will be deployed with one PHP-FPM pod, and one NGINX pod. The PH
 
 Admin pods aren't scaled up, they are single instances.
 
-To deploy the PHP-FPM and the NGINX pods we use the scripts https://github.com/Imagination-Media/magento-k8s/scripts/18.1-magento-admin-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/scripts/18.2-magento-admin-nginx.yaml.
+To deploy the PHP-FPM and the NGINX pods we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/18.1-magento-admin-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/18.2-magento-admin-nginx.yaml.
 
 ```ssh
 kubectl apply -f=scripts/18.1-magento-admin-phpfpm.yaml
@@ -439,7 +439,7 @@ kubectl apply -f=scripts/18.2-magento-admin-nginx.yaml
 ### Cron
 For the cron we deploy a single PHP-FPM cron pod, and this pod won't be scaled up. As the cron doesn't serve any HTTP/HTTPS traffic there's no need to have an NGINX pod.
 
-The script we can use to deploy the cron pod is https://github.com/Imagination-Media/magento-k8s/scripts/19-magento-cron-phpfpm.yaml.
+The script we can use to deploy the cron pod is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/19-magento-cron-phpfpm.yaml.
 
 ```ssh
 kubectl apply -f=scripts/19-magento-cron-phpfpm.yaml
@@ -447,11 +447,11 @@ kubectl apply -f=scripts/19-magento-cron-phpfpm.yaml
 
 ### Storefront
 The storefront will be deployed with one PHP-FPM pod, and one NGINX pod.
-The scripts used to deploy it are https://github.com/Imagination-Media/magento-k8s/scripts/20.1-magento-front-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/scripts/20.2-magento-front-nginx.yaml.
+The scripts used to deploy it are https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.1-magento-front-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.2-magento-front-nginx.yaml.
 
 Storefront pods are scaled up and down according to the resources usage. To scale up and down the NGINX and the PHP-FPM instances we use [HorizontalPodAutoscaler scripts.](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/ "HorizontalPodAutoscaler scripts.")
 
-We have https://github.com/Imagination-Media/magento-k8s/scripts/20.3-magento-front-phpfpm-hpa.yaml to scale up and down the PHP-FPM pods, and https://github.com/Imagination-Media/magento-k8s/scripts/20.4-magento-front-phpfpm-nginx.yaml for NGINX.
+We have https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.3-magento-front-phpfpm-hpa.yaml to scale up and down the PHP-FPM pods, and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.4-magento-front-phpfpm-nginx.yaml for NGINX.
 
 ```ssh
 kubectl apply -f=scripts/20.1-magento-front-phpfpm.yaml
@@ -487,9 +487,9 @@ affinity:
                       - services
 ```
 
-On this example (from https://github.com/Imagination-Media/magento-k8s/scripts/4-elasticsearch-deployment.yaml), we deploy the ElasticSearch pods in the ***services*** node pool. So, we created a node pool named services, it has one or more nodes (instances) there, and they are used to deploy these pods.
+On this example (from https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/4-elasticsearch-deployment.yaml), we deploy the ElasticSearch pods in the ***services*** node pool. So, we created a node pool named services, it has one or more nodes (instances) there, and they are used to deploy these pods.
 
-Same for the cron PHP-FPM (https://github.com/Imagination-Media/magento-k8s/scripts/19-magento-cron-phpfpm.yam), we have this:
+Same for the cron PHP-FPM (https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/19-magento-cron-phpfpm.yam), we have this:
 ```ssh
 affinity:
         nodeAffinity:
