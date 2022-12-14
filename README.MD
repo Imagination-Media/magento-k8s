@@ -78,9 +78,9 @@ We use [Envoy Contour](https://projectcontour.io/) as the load balancer and prox
 
 With Envoy we route the traffic to the admin and storefront instances, and it's used as the load balancer instead of the default load balancer offered by the cloud providers.
 
-To set up Envoy we run the https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/21-contour.yaml script.
+To set up Envoy we run the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/21-contour.yaml script.
 
-Then, we use https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/23-ingress.yaml to define the domains that are going to be managed by Envoy and what k8s service is going to be used to serve each one of them.
+Then, we use https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/23-ingress.yaml to define the domains that are going to be managed by Envoy and what k8s service is going to be used to serve each one of them.
 
 ## SSL Certificates
 
@@ -90,11 +90,11 @@ Our Kubernetes infrastructure uses [cert-manager](https://github.com/cert-manage
 
 With that, we can generate and renew [Let's Encrypt](https://letsencrypt.org/) certificates whenever needed.
 
-To start the cert manager service we use the https://github.com/Imagination-Media/magento-k8s/scripts/ingress/production/22.1-cert-manager.yaml script.
+To start the cert manager service we use the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.1-cert-manager.yaml script.
 
-Then, we use https://github.com/Imagination-Media/magento-k8s/scripts/ingress/production/22.2-lets-encrypt.yaml to create the certificate issuer.
+Then, we use https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.2-lets-encrypt.yaml to create the certificate issuer.
 
-And finally, https://github.com/Imagination-Media/magento-k8s/scripts/ingress/production/22.3-domains.yaml to define the certificates that are going to be generated and maintained.
+And finally, https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.3-domains.yaml to define the certificates that are going to be generated and maintained.
 
 ## SSH
 The only instance (pod) exposed to the internet and that accepts SSH connections is the admin panel pod. As all of the pods are read-only pods, the SSH user can access and modify some directories, but the code base can't be modified.
@@ -134,7 +134,7 @@ We customized the NGINX configuration to use the PHP-FPM container to execute an
 The NGINX dockerfile and NGINX config files are available in https://github.com/Imagination-Media/magento-k8s/tree/master/nginx.
 
 ## Gcsfuse
-<img src="https://help.sap.com/doc/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/loio41289de270b21014bbc5a10ce4041860_LowRes.png" width="60px" alt="Google Cloud Storage logo" />
+<img src="https://www.intelligencepartner.com/wp-content/uploads/2017/05/CloudStorage-4.png" width="60px" alt="Google Cloud Storage logo" />
 
 Google Cloud has a storage solution called [Cloud Storage](https://cloud.google.com/storage/). It's cheap, and for dev environments it's a good solution. In order to use it we had to install and configure [gcsfuse](https://github.com/GoogleCloudPlatform/gcsfuse) and release a new image tag with it. So, if you want to use it make sure you are using the images with the <b>gcsfuse</b> tag (Nginx & Php-Fpm images).
 
@@ -394,7 +394,7 @@ We have two directories there, **local** and **production**. One, to be used for
 #### Cert Manager
 Before deploying Envoy as the proxy/load balancer/ingress, we must deploy the cert manager service, responsible to be a service that generates SSL certificates.
 
-We use the script https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/22.1-cert-manager.yaml to deploy the cert manager service.
+We use the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.1-cert-manager.yaml to deploy the cert manager service.
 
 ```ssh
 kubectl apply -f=scripts/21-ingress/production/22.1-cert-manager.yaml
@@ -403,11 +403,11 @@ kubectl apply -f=scripts/21-ingress/production/22.1-cert-manager.yaml
 #### SSL
 To start the SSL management service, we also need to define who owns the SSL certificates. For that we need to deploy a [ClusterIssuer](https://cert-manager.io/docs/concepts/issuer/ "ClusterIssuer").
 
-We can deploy it running the script https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/22.2-lets-encrypt.yaml.
+We can deploy it running the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.2-lets-encrypt.yaml.
 
 On **email: info@imaginationmedia.com** you define the email address of who owns the SSL certificates.
 
-Then, we have the https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/22.3-domains.yaml script where we define the SSL certificates that are going to be generated, and what's the domain used on each one of them.
+Then, we have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.3-domains.yaml script where we define the SSL certificates that are going to be generated, and what's the domain used on each one of them.
 
 ```ssh
 kubectl apply -f=scripts/21-ingress/production/22.2-lets-encrypt.yaml
@@ -415,9 +415,9 @@ kubectl apply -f=scripts/21-ingress/production/22.3-domains.yaml
 ```
 
 #### Envoy
-To deploy [Envoy Contour](https://projectcontour.io/ "Envoy Contour"), we have the https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/21-contour.yaml script.
+To deploy [Envoy Contour](https://projectcontour.io/ "Envoy Contour"), we have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/21-contour.yaml script.
 
-Once Envoy is deployed we can configure the routes that are going to be managed by Envoy. So, we define the domains that attached to the Kubernetes services. We have the script https://github.com/Imagination-Media/magento-k8s/scripts/21-ingress/production/23-ingress.yaml where we define all of that.
+Once Envoy is deployed we can configure the routes that are going to be managed by Envoy. So, we define the domains that attached to the Kubernetes services. We have the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/23-ingress.yaml where we define all of that.
 
 ```ssh
 kubectl apply -f=scripts/21-ingress/production/21-contour.yaml
