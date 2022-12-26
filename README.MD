@@ -526,13 +526,13 @@ Please also assign specific branches for each environment. For example, set the 
 [GitHub secrets ](https://docs.github.com/en/actions/security-guides/encrypted-secrets "GitHub secrets") are variables used in our CI/CD process, and they store values as secrets, meaning they are not going to be visible for anyone. We need to set up global secrets and environment secrets. Global secrets are available for all environments, and environment secrets are going to be set on each one of the environments we have created, and they are shared between different environments.
 
 #### General secrets
-- **GOOGLE_APPLICATION_CREDENTIALS ** - This is used for Google Cloud projects. On this secret we store a base64 encoded service account key. This service account must have access to connect with the Kubernetes cluster where the application was deployed.
+- **GOOGLE_APPLICATION_CREDENTIALS** - This is used for Google Cloud projects. On this secret we store a base64 encoded service account key. This service account must have access to connect with the Kubernetes cluster where the application was deployed.
 - **NODE_AUTH_TOKEN** - [A token generated](https://github.com/settings/tokens "A token generated") from a GitHub account. This token is used to publish the container images, so it must have access to read/publish containers.
-- **PROJECT_ID ** - This is the Google Cloud project id. Only used for Google Cloud projects.
+- **PROJECT_ID** - This is the Google Cloud project id. Only used for Google Cloud projects.
 - **SLACK_WEBHOOK** - The slack webhook URL to notify slack users when the deployment was completed.
 
 #### Environment secrets
-- **APP_ETC_ENV ** - the Magento app/etc/env.php file used by Magento. An example of this file is:
+- **APP_ETC_ENV** - the Magento app/etc/env.php file used by Magento. An example of this file is:
 ```php
 <?php
 return [
@@ -753,6 +753,11 @@ return [
     ],
     'db_logger' => [
         'output' => 'disabled'
+    ],
+    'deployment' => [
+        'blue_green' => [
+            'enabled' => true
+        ]
     ]
 ];
 ```
