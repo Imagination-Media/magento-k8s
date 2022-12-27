@@ -122,30 +122,38 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ nginx, phpfpm ]
     steps:
-      - name: Restart K8s Deployment
-        uses: ameydev/gke-kubectl-action@master
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          CLUSTER_NAME: demo-environment
-          ZONE_NAME: us-central1-a
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          args: rollout restart deployment magento-admin-phpfpm-deployment -n=magento-demo-production
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: 'demo-environment'
+          location: 'us-central1-a'
+      
+      - id: 'restart-deployment'
+        run: 'kubectl rollout restart deployment magento-admin-phpfpm-deployment -n=magento-demo-production'
 
   admin_panel_nginx:
     name: Deploy Admin Nginx
     runs-on: ubuntu-latest
     needs: [ nginx, phpfpm ]
     steps:
-      - name: Restart K8s Deployment
-        uses: ameydev/gke-kubectl-action@master
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          CLUSTER_NAME: demo-environment
-          ZONE_NAME: us-central1-a
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          args: rollout restart deployment magento-admin-nginx-deployment -n=magento-demo-production
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: 'demo-environment'
+          location: 'us-central1-a'
+      
+      - id: 'restart-deployment'
+        run: 'kubectl rollout restart deployment magento-admin-nginx-deployment -n=magento-demo-production'
 
   cron:
     name: Deploy Cron
@@ -154,45 +162,63 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Restart K8s Deployment
-        uses: ameydev/gke-kubectl-action@master
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          CLUSTER_NAME: demo-environment
-          ZONE_NAME: us-central1-a
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          args: delete -f=server/k8s/production/19-magento-cron-phpfpm.yaml && sleep 30s && kubectl apply -f=server/k8s/production/19-magento-cron-phpfpm.yaml
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: 'demo-environment'
+          location: 'us-central1-a'
+      
+      - id: 'delete-deployment'
+        run: 'kubectl delete -f=server/k8s/production/19-magento-cron-phpfpm.yaml'
+
+      - id: 'sleep-30-seconds'
+        run: 'sleep 30s'
+
+      - id: 'create-deployment'
+        run: 'kubectl apply -f=server/k8s/production/19-magento-cron-phpfpm.yaml'
 
   storefront_phpfpm:
     name: Deploy Storefront PHP-FPM
     runs-on: ubuntu-latest
     needs: [ nginx, phpfpm ]
     steps:
-      - name: Restart K8s Deployment
-        uses: ameydev/gke-kubectl-action@master
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          CLUSTER_NAME: demo-environment
-          ZONE_NAME: us-central1-a
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          args: rollout restart deployment magento-front-phpfpm-deployment -n=magento-demo-production
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: 'demo-environment'
+          location: 'us-central1-a'
+      
+      - id: 'restart-deployment'
+        run: 'kubectl rollout restart deployment magento-front-phpfpm-deployment -n=magento-demo-production'
 
   storefront_nginx:
     name: Deploy Storefront Nginx
     runs-on: ubuntu-latest
     needs: [ nginx, phpfpm ]
     steps:
-      - name: Restart K8s Deployment
-        uses: ameydev/gke-kubectl-action@master
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          CLUSTER_NAME: demo-environment
-          ZONE_NAME: us-central1-a
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          args: rollout restart deployment magento-front-nginx-deployment -n=magento-demo-production
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: 'demo-environment'
+          location: 'us-central1-a'
+      
+      - id: 'restart-deployment'
+        run: 'kubectl rollout restart deployment magento-front-nginx-deployment -n=magento-demo-production'
 
   notification:
     name: Notify to test
