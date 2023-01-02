@@ -212,8 +212,6 @@ Inside the **phpfpm** directory, please create a **Dockerfile** file with this c
 FROM ghcr.io/imagination-media/magento-k8s/php-fpm:8.1
 
 ARG SSH_AUTHORIZED_KEYS
-ARG SSH_ID_RSA_PRIVATE
-ARG SSH_ID_RSA_PUBLIC
 ARG APP_ETC_ENV
 
 # User root
@@ -263,6 +261,9 @@ The first line defines the image we are going to use for our Php-Fpm image. We h
 This image will download the repository, install composer packages, deploy the static content files, and then compile the PHP code.
 
 The name of our image will be **ghcr.io/my-company/my-repository/php-fpm:myenvironment**. So, we will be generating images for each environment and use different tags for each one of these environments.
+
+### app/etc/config.php
+In order to execute the di:compile and static deployment commands, we need to add the website scope configuration to the app/etc/config.php file. We can do that by running **bin/magento app:config:dump scopes**.
 
 ## K8S Files
 On this section we are going to describe the scripts involved on this infrastructure, what each script is used for, and how to deploy them.

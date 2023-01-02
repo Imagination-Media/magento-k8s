@@ -65,7 +65,6 @@ jobs:
         uses: elgohr/Publish-Docker-Github-Action@v4
         env:
           SSH_AUTHORIZED_KEYS: ${{ secrets.SSH_AUTHORIZED_KEYS }}
-          SSH_CONFIG: ${{ secrets.SSH_CONFIG }}
           IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
           APP_ETC_ENV: ${{ secrets.APP_ETC_ENV }}
           GKE_SERVICE_ACCOUNT_KEY: ${{ secrets.GKE_SERVICE_ACCOUNT_KEY }}
@@ -76,7 +75,7 @@ jobs:
           registry: ghcr.io
           tags: ${{ secrets.IMAGE_TAG }}
           workdir: server/docker/nginx
-          buildargs: SSH_AUTHORIZED_KEYS,SSH_CONFIG,APP_ETC_ENV,GKE_SERVICE_ACCOUNT_KEY
+          buildargs: SSH_AUTHORIZED_KEYS,APP_ETC_ENV,GKE_SERVICE_ACCOUNT_KEY
           platforms: linux/arm64
 
   phpfpm:
@@ -103,7 +102,6 @@ jobs:
         uses: elgohr/Publish-Docker-Github-Action@v4
         env:
           SSH_AUTHORIZED_KEYS: ${{ secrets.SSH_AUTHORIZED_KEYS }}
-          SSH_CONFIG: ${{ secrets.SSH_CONFIG }}
           IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
           APP_ETC_ENV: ${{ secrets.APP_ETC_ENV }}
           GKE_SERVICE_ACCOUNT_KEY: ${{ secrets.GKE_SERVICE_ACCOUNT_KEY }}
@@ -114,7 +112,7 @@ jobs:
           registry: ghcr.io
           tags: ${{ secrets.IMAGE_TAG }}
           workdir: server/docker/phpfpm
-          buildargs: SSH_AUTHORIZED_KEYS,SSH_CONFIG,APP_ETC_ENV,GKE_SERVICE_ACCOUNT_KEY
+          buildargs: SSH_AUTHORIZED_KEYS,APP_ETC_ENV,GKE_SERVICE_ACCOUNT_KEY
           platforms: linux/arm64
 
   admin_panel_phpfpm:
