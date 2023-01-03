@@ -94,12 +94,8 @@ RUN docker-php-ext-install xsl
 RUN docker-php-ext-install sockets
 RUN docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
 
-# Download sourceguardian
-RUN mkdir -p /tmp/sourceguardian/
+# Create folder to install plugins
 RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20190902
-RUN mkdir -p /tmp/sourceguardian
-RUN curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-aarch64.tar.gz
-RUN curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-x86_64.tar.gz
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
