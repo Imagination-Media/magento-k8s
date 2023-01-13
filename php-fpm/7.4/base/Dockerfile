@@ -99,7 +99,7 @@ RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20190902
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php composer-setup.php
+RUN php composer-setup.php --version=2.2.17
 RUN php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/composer
 RUN chmod +x /usr/local/bin/composer
