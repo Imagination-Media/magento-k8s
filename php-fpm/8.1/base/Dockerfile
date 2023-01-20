@@ -116,6 +116,12 @@ RUN apt-get install -y patch
 #Install Grunt
 RUN npm i -g grunt
 
+#Install mage2tv cache clean
+RUN mkdir -p /var/www/util && chown -R nginx:nginx /var/www/util
+RUN git clone https://github.com/mage2tv/magento-cache-clean.git /var/www/util/mage2tv
+RUN ln -s /var/www/util/mage2tv/bin/cache-clean.js /usr/bin/mage2tv-cache-clean
+RUN chown -R nginx:nginx /usr/bin/mage2tv-cache-clean
+
 # Expose SSH port
 EXPOSE 22
 
