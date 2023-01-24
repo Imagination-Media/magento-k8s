@@ -116,6 +116,9 @@ RUN apt-get install -y patch
 #Install Grunt
 RUN npm i -g grunt
 
+#Install Magepack
+RUN npm i -g magepack
+
 #Install mage2tv cache clean
 RUN mkdir -p /var/www/util && chown -R nginx:nginx /var/www/util
 RUN git clone https://github.com/mage2tv/magento-cache-clean.git /var/www/util/mage2tv
