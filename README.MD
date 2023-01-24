@@ -787,3 +787,15 @@ To use this infrastructure with your Magento codebase first create a **server** 
 Inside the **docker** directory please copy the nginx and phpfpm directories from https://github.com/Imagination-Media/magento-k8s/project-images.
 
 Inside **k8s** create one folder for each environment that you have. For example, production. And then, inside each one of these environment directories you copy the files from https://github.com/Imagination-Media/magento-k8s/scripts.
+
+## Magento Tools
+A couple of Magento tools are installed and available to be used on these environments (under the PHP-FPM container). They help developers if the containers are used for development purposes, and even to maintain the website.
+
+### n98-magerun2
+[n98-magerun2](https://github.com/netz98/n98-magerun2) CLI Tools provides some handy tools to work with Magento / Mage-OS / Adobe Commerce from command line.
+
+### mage2tv-cache-clean
+[mage2tv-cache-clean](https://github.com/mage2tv/magento-cache-clean) is a *bin/magento cache:clean* file watcher. It allows us to clean the cache for specific areas/pages once files that are used in those areas are modified.
+
+### magepack
+[magepack](https://github.com/magesuite/magepack) is a bold attempt in making Magento 2 frontend as fast as never before. It builds on experiences gained with Advanced JavaScript bundling guide and Baler to provide the best of both worlds - ease of use and superior performance.
