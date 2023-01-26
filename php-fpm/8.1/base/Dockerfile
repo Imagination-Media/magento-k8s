@@ -12,9 +12,6 @@ RUN apt-get install -y bash-completion
 RUN apt-get install -y mariadb-client
 RUN apt-get install -y pv
 
-# Install oh-my-zsh
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
-
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
@@ -38,6 +35,9 @@ RUN usermod -u 107 systemd-timesync
 
 # Change default nginx path when SSHing
 RUN sed -i 's/\/home\/nginx/\/var\/www\/html/g' /etc/passwd
+
+# Install oh-my-zsh
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
 
 # Set oh-my-zsh as default shell
 RUN chsh -s /bin/zsh nginx
