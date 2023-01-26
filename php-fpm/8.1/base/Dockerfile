@@ -12,6 +12,9 @@ RUN apt-get install -y bash-completion
 RUN apt-get install -y mariadb-client
 RUN apt-get install -y pv
 
+# Install oh-my-zsh
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
