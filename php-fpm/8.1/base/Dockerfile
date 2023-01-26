@@ -39,6 +39,9 @@ RUN usermod -u 107 systemd-timesync
 # Change default nginx path when SSHing
 RUN sed -i 's/\/home\/nginx/\/var\/www\/html/g' /etc/passwd
 
+# Set oh-my-zsh as default shell
+RUN chsh -s /bin/zsh nginx
+
 # Copy ssh config
 RUN mkdir -p /home/nginx/.ssh
 COPY ssh-config.txt /home/nginx/.ssh/config
