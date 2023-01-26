@@ -13,7 +13,7 @@ RUN apt-get install -y mariadb-client
 RUN apt-get install -y pv
 
 # Install oh-my-zsh
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
 
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
