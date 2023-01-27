@@ -12,6 +12,17 @@ RUN apt-get install -y bash-completion
 RUN apt-get install -y mariadb-client
 RUN apt-get install -y pv
 
+# Install oh-my-zsh
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+    -t https://github.com/denysdovhan/spaceship-prompt \
+    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
+    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
+    -p git \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions
+
+RUN cp ~/.zshrc /var/www/.zshrc
+
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
@@ -36,23 +47,14 @@ RUN usermod -u 107 systemd-timesync
 # Change default nginx path when SSHing
 RUN sed -i 's/\/home\/nginx/\/var\/www\/html/g' /etc/passwd
 
-# Install oh-my-zsh
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
-    -t https://github.com/denysdovhan/spaceship-prompt \
-    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
-    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
-    -p git \
-    -p https://github.com/zsh-users/zsh-autosuggestions \
-    -p https://github.com/zsh-users/zsh-completions
-
-# Set oh-my-zsh as default shell
-RUN chsh -s /bin/zsh nginx
-
 # Copy ssh config
 RUN mkdir -p /home/nginx/.ssh
 COPY ssh-config.txt /home/nginx/.ssh/config
 RUN chown -R nginx:nginx /home/nginx/.ssh/
 RUN chmod 600 /home/nginx/.ssh/config
+
+# Set oh-my-zsh as default shell
+RUN chsh -s /bin/zsh nginx
 
 # Copy the welcome message
 COPY welcome.txt /etc/motd
