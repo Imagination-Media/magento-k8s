@@ -139,6 +139,12 @@ RUN git clone https://github.com/mage2tv/magento-cache-clean.git /var/www/util/m
 RUN ln -s /var/www/util/mage2tv/bin/cache-clean.js /usr/bin/mage2tv-cache-clean
 RUN chown -R nginx:nginx /usr/bin/mage2tv-cache-clean
 
+# Mailhog
+RUN apt install golang-go -y
+RUN go get github.com/mailhog/MailHog
+RUN mv ~/go/bin/MailHog /usr/local/bin/mailhog
+RUN echo "sendmail_path='/usr/local/bin/mailhog sendmail mailhog@mail.com'" > /usr/local/etc/php/conf.d/docker-php-ext-mailhog.ini
+
 # Expose SSH port
 EXPOSE 22
 
