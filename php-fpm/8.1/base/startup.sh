@@ -55,9 +55,6 @@ echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/i
 mv /tmp/ioncube/ioncube/ioncube_loader_lin_8.1.so /usr/local/lib/php/extensions/no-debug-non-zts-20190902
 echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ioncube_loader_lin_8.1.so' > /usr/local/etc/php/conf.d/docker-php-ext-ioncube.ini
 
-# Copy oh-my-zsh config
-cp /var/www/.zshrc /var/www/html/.zshrc && chown nginx:nginx /var/www/html/.zshrc
-
 # Initialize the open ssh server
 if [[ -z "$enable_ssh" || "$enable_ssh" == "0" ]]; then
   echo "SSH not enabled"
