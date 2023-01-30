@@ -84,5 +84,13 @@ else
   service ssh start
 fi
 
+# Start Mailhog 
+if [[ -z "$mailhog" || "$mailhog" == "0" ]]; then
+    echo "No mailhog"
+else
+    echo "Starting mailhog"
+    /usr/bin/env /usr/local/bin/mailhog > /dev/null 2>&1 &
+fi
+
 # Start php-fpm
 php-fpm

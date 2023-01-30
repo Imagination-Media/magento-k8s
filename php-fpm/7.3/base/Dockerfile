@@ -12,6 +12,15 @@ RUN apt-get install -y bash-completion
 RUN apt-get install -y mariadb-client
 RUN apt-get install -y pv
 
+# Install oh-my-zsh
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+    -t https://github.com/denysdovhan/spaceship-prompt \
+    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
+    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
+    -p git \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions
+
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
@@ -41,6 +50,12 @@ RUN mkdir -p /home/nginx/.ssh
 COPY ssh-config.txt /home/nginx/.ssh/config
 RUN chown -R nginx:nginx /home/nginx/.ssh/
 RUN chmod 600 /home/nginx/.ssh/config
+
+# Set oh-my-zsh as default shell and make some adjustments
+RUN chsh -s /bin/zsh nginx
+COPY .zshrc /var/www/html/.zshrc
+RUN mv /root/.oh-my-zsh /var/www/
+RUN chown -R nginx:nginx /var/www/.oh-my-zsh
 
 # Copy the welcome message
 COPY welcome.txt /etc/motd
@@ -124,6 +139,12 @@ RUN mkdir -p /var/www/util && chown -R nginx:nginx /var/www/util
 RUN git clone https://github.com/mage2tv/magento-cache-clean.git /var/www/util/mage2tv
 RUN ln -s /var/www/util/mage2tv/bin/cache-clean.js /usr/bin/mage2tv-cache-clean
 RUN chown -R nginx:nginx /usr/bin/mage2tv-cache-clean
+
+# Mailhog
+RUN apt install golang-go -y
+RUN go get github.com/mailhog/MailHog
+RUN mv ~/go/bin/MailHog /usr/local/bin/mailhog
+RUN echo "sendmail_path='/usr/local/bin/mailhog sendmail mailhog@mail.com'" > /usr/local/etc/php/conf.d/docker-php-ext-mailhog.ini
 
 # Expose SSH port
 EXPOSE 22
