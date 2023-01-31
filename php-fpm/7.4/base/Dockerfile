@@ -149,6 +149,16 @@ RUN go get github.com/mailhog/MailHog
 RUN mv ~/go/bin/MailHog /usr/local/bin/mailhog
 RUN echo "sendmail_path='/usr/local/bin/mailhog sendmail mailhog@mail.com'" > /usr/local/etc/php/conf.d/docker-php-ext-mailhog.ini
 
+# PHP-CS
+RUN curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+RUN curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar
+RUN mv phpcs.phar /usr/local/bin/phpcs
+RUN mv phpcbf.phar /usr/local/bin/phpcbf
+RUN chmod +x /usr/local/bin/phpcs
+RUN chmod +x /usr/local/bin/phpcbf
+RUN chown nginx:nginx /usr/local/bin/phpcs
+RUN chown nginx:nginx /usr/local/bin/phpcbf
+
 # Expose SSH port
 EXPOSE 22
 
