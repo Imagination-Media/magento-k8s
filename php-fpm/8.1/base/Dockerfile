@@ -60,6 +60,10 @@ RUN chown -R nginx:nginx /var/www/html/.zcompdump
 RUN mv /root/.oh-my-zsh /var/www/
 RUN chown -R nginx:nginx /var/www/.oh-my-zsh
 
+# oh-my-zsh for github codespaces workaround
+COPY .zshrc /var/www/.zshrc
+COPY .zcompdump /var/www/.zcompdump
+
 # Copy the welcome message
 COPY welcome.txt /etc/motd
 

@@ -71,5 +71,17 @@ else
     /usr/bin/env /usr/local/bin/mailhog > /dev/null 2>&1 &
 fi
 
+# oh-my-zsh config files (Github Codespaces)
+if [[ ! -f /var/www/html/.zshrc ]]
+then
+    echo "oh-my-zsh config doesnt exists"
+    mv /var/www/.zshrc /var/www/html/.zshrc
+    mv /var/www/.zcompdump /var/www/html/.zcompdump
+    chown -R nginx:nginx /var/www/html/.zshrc
+    chown -R nginx:nginx /var/www/html/.zcompdump
+else
+    echo "oh-my-zsh config exists"
+fi
+
 # Start php-fpm
 php-fpm
