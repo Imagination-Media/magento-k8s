@@ -54,6 +54,9 @@ RUN chmod 600 /home/nginx/.ssh/config
 # Set oh-my-zsh as default shell and make some adjustments
 RUN chsh -s /bin/zsh nginx
 COPY .zshrc /var/www/html/.zshrc
+COPY .zcompdump /var/www/html/.zcompdump
+RUN chown -R nginx:nginx /var/www/html/.zshrc
+RUN chown -R nginx:nginx /var/www/html/.zcompdump
 RUN mv /root/.oh-my-zsh /var/www/
 RUN chown -R nginx:nginx /var/www/.oh-my-zsh
 
