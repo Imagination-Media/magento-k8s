@@ -1,4 +1,4 @@
-name: Build PHP-FPM 7.3 Images
+name: Build PHP-FPM 7.3 Gcsfuse Image
 
 on:
   push:

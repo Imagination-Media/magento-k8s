@@ -1,4 +1,4 @@
-name: Build PHP-FPM 8.1 Images
+name: Build PHP-FPM 8.1 Gcsfuse Image
 
 on:
   push:
