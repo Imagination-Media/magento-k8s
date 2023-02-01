@@ -12,15 +12,6 @@ RUN apt-get install -y bash-completion
 RUN apt-get install -y mariadb-client
 RUN apt-get install -y pv
 
-# Install oh-my-zsh
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
-    -t https://github.com/denysdovhan/spaceship-prompt \
-    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
-    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
-    -p git \
-    -p https://github.com/zsh-users/zsh-autosuggestions \
-    -p https://github.com/zsh-users/zsh-completions
-
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
@@ -50,19 +41,6 @@ RUN mkdir -p /home/nginx/.ssh
 COPY ssh-config.txt /home/nginx/.ssh/config
 RUN chown -R nginx:nginx /home/nginx/.ssh/
 RUN chmod 600 /home/nginx/.ssh/config
-
-# Set oh-my-zsh as default shell and make some adjustments
-RUN chsh -s /bin/zsh nginx
-COPY .zshrc /var/www/html/.zshrc
-COPY .zcompdump /var/www/html/.zcompdump
-RUN chown -R nginx:nginx /var/www/html/.zshrc
-RUN chown -R nginx:nginx /var/www/html/.zcompdump
-RUN mv /root/.oh-my-zsh /var/www/
-RUN chown -R nginx:nginx /var/www/.oh-my-zsh
-
-# oh-my-zsh for github codespaces workaround
-COPY .zshrc /var/www/.zshrc
-COPY .zcompdump /var/www/.zcompdump
 
 # Copy the welcome message
 COPY welcome.txt /etc/motd
