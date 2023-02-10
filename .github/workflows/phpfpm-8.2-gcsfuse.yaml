@@ -22,7 +22,6 @@ jobs:
   php_fpm_82_gcsfuse:
     name: Php-fpm (8.2) + Gcsfuse
     runs-on: ubuntu-latest
-    needs: [ php_fpm_82 ]
     steps:
       - uses: actions/checkout@master
 
