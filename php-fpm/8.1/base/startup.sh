@@ -50,11 +50,11 @@ fi
 phpVersion="$(php -v | awk 'NR==1 {print $2}' | cut -d'.' -f1-2)"
 cp /tmp/sourceguardian/ixed.$phpVersion.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.$phpVersion.lin
 chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.$phpVersion.lin
-echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.$phpVersion.lin' > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
+echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.$phpVersion.lin" > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
 
 # Set up IonCube
 mv /tmp/ioncube/ioncube/ioncube_loader_lin_$phpVersion.so /usr/local/lib/php/extensions/no-debug-non-zts-20190902
-echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ioncube_loader_lin_$phpVersion.so' > /usr/local/etc/php/conf.d/docker-php-ext-ioncube.ini
+echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ioncube_loader_lin_$phpVersion.so" > /usr/local/etc/php/conf.d/docker-php-ext-ioncube.ini
 
 # Initialize the open ssh server
 if [[ -z "$enable_ssh" || "$enable_ssh" == "0" ]]; then
