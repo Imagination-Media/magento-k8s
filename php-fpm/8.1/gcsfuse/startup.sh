@@ -18,7 +18,7 @@ mkdir -p /var/www/html/var/log && chown nginx:nginx /var/www/html/var/log
 /work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_log" /var/www/html/var/log
 
 mkdir -p /var/www/html/var/report && chown nginx:nginx /var/www/html/var/report
-/work/bin/gcsfuse --implicit-dirs ---limit-ops-per-sec "0" -dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_report" /var/www/html/var/report
+/work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" -dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_report" /var/www/html/var/report
 
 mkdir -p /var/www/html/pub/media && chown nginx:nginx /var/www/html/pub/media
 /work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_pub_media" /var/www/html/pub/media
