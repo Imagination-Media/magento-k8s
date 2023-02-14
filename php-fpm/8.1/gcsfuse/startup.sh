@@ -9,19 +9,19 @@ rm -rf /root/.config/gcloud/application_default_credentials.base64
 gcloud auth activate-service-account "$gke_email" --key-file=/root/.config/gcloud/application_default_credentials.json
 
 mkdir -p /var/www/html/var/export && chown nginx:nginx /var/www/html/var/export
-/work/bin/gcsfuse --implicit-dirs --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_export" /var/www/html/var/export
+/work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_export" /var/www/html/var/export
 
 mkdir -p /var/www/html/var/importexport && chown nginx:nginx /var/www/html/var/importexport
-/work/bin/gcsfuse --implicit-dirs --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_importexport" /var/www/html/var/importexport
+/work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_importexport" /var/www/html/var/importexport
 
 mkdir -p /var/www/html/var/log && chown nginx:nginx /var/www/html/var/log
-/work/bin/gcsfuse --implicit-dirs --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_log" /var/www/html/var/log
+/work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_log" /var/www/html/var/log
 
 mkdir -p /var/www/html/var/report && chown nginx:nginx /var/www/html/var/report
-/work/bin/gcsfuse --implicit-dirs --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_report" /var/www/html/var/report
+/work/bin/gcsfuse --implicit-dirs ---limit-ops-per-sec "0" -dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_report" /var/www/html/var/report
 
 mkdir -p /var/www/html/pub/media && chown nginx:nginx /var/www/html/pub/media
-/work/bin/gcsfuse --implicit-dirs --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_pub_media" /var/www/html/pub/media
+/work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_pub_media" /var/www/html/pub/media
 
 # Set up cron
 if [[ -z "$cron_jobs" || "$cron_jobs" == "0" ]]; then
