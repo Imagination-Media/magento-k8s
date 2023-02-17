@@ -141,6 +141,17 @@ RUN chmod +x /usr/local/bin/phpcbf
 RUN chown nginx:nginx /usr/local/bin/phpcs
 RUN chown nginx:nginx /usr/local/bin/phpcbf
 
+# Install redis-cli and add custom CLI commands
+RUN git clone https://github.com/lujiajing1126/redis-cli /var/www/util/redis-cli
+RUN cd /var/www/util/redis-cli && npm i && npm run build
+RUN chown -R nginx:nginx /var/www/util/redis-cli
+COPY magupgrade.sh /usr/local/bin/magupgrade
+RUN chmod +x /usr/local/bin/magupgrade
+RUN chown nginx:nginx /usr/local/bin/magupgrade
+RUN ln -s /var/www/util/redis-cli/bin/rdcli /usr/local/bin/redis-cli
+RUN chmod +x /usr/local/bin/redis-cli
+RUN chown nginx:nginx /usr/local/bin/redis-cli
+
 # Expose SSH port
 EXPOSE 22
 
