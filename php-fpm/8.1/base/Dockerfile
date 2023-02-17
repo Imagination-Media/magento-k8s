@@ -148,7 +148,7 @@ RUN chown -R nginx:nginx /var/www/util/redis-cli
 COPY magupgrade.sh /usr/local/bin/magupgrade
 RUN chmod +x /usr/local/bin/magupgrade
 RUN chown nginx:nginx /usr/local/bin/magupgrade
-RUN ln -s /var/www/util/redis-cli/bin/rdcli /usr/bin/redis-cli
+RUN ln -s /var/www/util/redis-cli/bin/rdcli /usr/local/bin/redis-cli
 RUN chmod +x /usr/local/bin/redis-cli
 RUN chown nginx:nginx /usr/local/bin/redis-cli
 
