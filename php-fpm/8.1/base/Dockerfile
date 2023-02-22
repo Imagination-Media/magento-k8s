@@ -88,6 +88,9 @@ RUN apt-get install -y \
 RUN apt-get install -y libmagickwand-dev
 RUN pecl install imagick && docker-php-ext-enable imagick
 
+# Install grpc
+RUN pecl install grpc && docker-php-ext-enable grpc
+
 RUN apt-get install -y libxslt-dev
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install xsl
