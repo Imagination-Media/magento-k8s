@@ -1,0 +1,8 @@
+Image name:
+imagination-media/magento-k8s/php-fpm:8.1-grpc
+ghcr.io/imagination-media/magento-k8s/php-fpm:8.1-grpc
+
+docker buildx create --use
+
+docker buildx build --no-cache --platform linux/amd64,linux/arm64 \
+-t ghcr.io/imagination-media/magento-k8s/php-fpm:8.1-grpc --push .
