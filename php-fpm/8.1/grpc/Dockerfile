@@ -7,3 +7,5 @@ RUN wget http://pear.php.net/go-pear.phar
 RUN php go-pear.phar && pecl install grpc
 RUN rm -rf go-pear.phar
 RUN docker-php-ext-enable grpc
+
+ENTRYPOINT ["/bin/bash", "/root/startup.sh"]
