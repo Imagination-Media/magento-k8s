@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
           tags: 8.1-test
-          workdir: php-fpm/8.1/base
+          workdir: php-fpm/8.1
 
   php_fpm_81_arm64:
     name: Php-fpm (8.1) arm64
@@ -49,4 +49,4 @@ jobs:
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
           tags: 8.1-test
-          workdir: php-fpm/8.1/base
+          workdir: php-fpm/8.1
