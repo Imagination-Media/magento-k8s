@@ -2,10 +2,10 @@ name: Build PHP-FPM 8.1 Images
 
 on:
   push:
-    # branches:
-    #   - 'master'
-    paths:
-      - 'php-fpm/8.1/**'
+    branches:
+      - 'new-images'
+    # paths:
+    #   - 'php-fpm/8.1/**'
   workflow_dispatch:
     inputs:
       logLevel:
