@@ -2,10 +2,10 @@ name: Build PHP-FPM 8.1 Images
 
 on:
   push:
-    branches:
-      - 'master'
+    # branches:
+    #   - 'master'
     paths:
-      - 'php-fpm/8.1/base/**'
+      - 'php-fpm/8.1/**'
   workflow_dispatch:
     inputs:
       logLevel:
@@ -19,17 +19,11 @@ on:
           - debug
 
 jobs:
-  php_fpm_81:
-    name: Php-fpm (8.1)
+  php_fpm_81_amd64:
+    name: Php-fpm (8.1) amd64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
 
       - name: Create image
         uses: elgohr/Publish-Docker-Github-Action@v4
@@ -38,22 +32,14 @@ jobs:
           username: igor-imaginemage
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
-          tags: 8.1
+          tags: 8.1-test
           workdir: php-fpm/8.1/base
-          platforms: linux/amd64,linux/arm64
 
-  php_fpm_81_gcsfuse:
-    name: Php-fpm (8.1) + Gcsfuse
-    runs-on: ubuntu-latest
-    needs: [ php_fpm_81 ]
+  php_fpm_81_arm64:
+    name: Php-fpm (8.1) arm64
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
     steps:
       - uses: actions/checkout@master
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
 
       - name: Create image
         uses: elgohr/Publish-Docker-Github-Action@v4
@@ -62,6 +48,5 @@ jobs:
           username: igor-imaginemage
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
-          tags: 8.1-gcsfuse
-          workdir: php-fpm/8.1/gcsfuse
-          platforms: linux/amd64,linux/arm64
+          tags: 8.1-test
+          workdir: php-fpm/8.1/base
