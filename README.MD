@@ -136,7 +136,7 @@ The NGINX dockerfile and NGINX config files are available in https://github.com/
 ## Gcsfuse
 <img src="https://www.intelligencepartner.com/wp-content/uploads/2017/05/CloudStorage-4.png" width="60px" alt="Google Cloud Storage logo" />
 
-Google Cloud has a storage solution called [Cloud Storage](https://cloud.google.com/storage/). It's cheap, and for dev environments it's a good solution. In order to use it we had to install and configure [gcsfuse](https://github.com/GoogleCloudPlatform/gcsfuse) and release a new image tag with it. So, if you want to use it make sure you are using the images with the <b>gcsfuse</b> tag (Nginx & Php-Fpm images).
+Google Cloud has a storage solution called [Cloud Storage](https://cloud.google.com/storage/). It's cheap, and for dev environments it's a good solution.
 
 ## Shared directories
 Shared directories are the directories that should be mounted as volumes across all the Nginx and Php-Fpm pods. They have files that are managed by the application.
@@ -199,7 +199,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-The first line defines the image we are going to use for our NGINX image. We must use **ghcr.io/imagination-media/magento-k8s/nginx:latest** by default, or use  **ghcr.io/imagination-media/magento-k8s/nginx:latest-gcsfguse** if using [gcsfuse](ghcr.io/imagination-media/magento-k8s/nginx:latest "gcsfuse").
+The first line defines the image we are going to use for our NGINX image. We must use **ghcr.io/imagination-media/magento-k8s/nginx:latest** by default.
 
 This image will download the repository, install composer packages, deploy the static content files, and then compile the PHP code.
 
@@ -256,7 +256,7 @@ EXPOSE 22
 ENTRYPOINT ["/bin/bash", "/root/startup.sh"]
 ```
 
-The first line defines the image we are going to use for our Php-Fpm image. We have different images for each PHP version, and on each version we also have a [gcsfuse version](The first line defines the image we are going to use for our NGINX image. We must use **ghcr.io/imagination-media/magento-k8s/nginx:latest** by default, or use  **ghcr.io/imagination-media/magento-k8s/nginx:latest-gcsfguse** if using [gcsfuse](ghcr.io/imagination-media/magento-k8s/nginx:latest "gcsfuse") of it. So we have for example **ghcr.io/imagination-media/magento-k8s/php-fpm:8.1-gcsfuse** for PHP 8.1, and **ghcr.io/imagination-media/magento-k8s/php-fpm:8.1-gcsfuse** for PHP 8.1 with gcsfuse. To know more about the support versions please check https://github.com/Imagination-Media/magento-k8s#php-fpm.
+The first line defines the image we are going to use for our Php-Fpm image.
 
 This image will download the repository, install composer packages, deploy the static content files, and then compile the PHP code.
 
@@ -324,6 +324,7 @@ You first need to generate a service account key from your GCP project, which wi
 
 Once you have the service account key, these are the variables we are going to set up:
 
+- **gcsfuse_enable** - Set it with 1 to enable gcsfuse.
 - **gke_email** - The service account key email address.
 - **gke_service_account_key** - The base64 encoded service account key.
 - **gke_bucket_var_export** - The name of your Cloud storage bucket to mount the ***var/export*** directory.
