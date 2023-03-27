@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - 'master'
-    # paths:
-    #   - 'nginx/**'
+    paths:
+      - 'nginx/**'
   workflow_dispatch:
     inputs:
       logLevel:
