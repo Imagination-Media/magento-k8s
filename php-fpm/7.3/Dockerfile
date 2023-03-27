@@ -44,30 +44,38 @@ RUN docker-php-ext-enable opcache && \
     apt-get install -y \
         libcurl4-openssl-dev \
     && docker-php-ext-install curl && \
+
     apt-get install -y \
         libssl-dev \
     && docker-php-ext-install ftp phar && \
+
     apt-get install -y \
         libicu-dev \
     && docker-php-ext-install intl && \
+
     apt-get install -y \
         libmcrypt-dev \
     && docker-php-ext-install session && \
+
     apt-get install -y \
         libzip-dev \
         zlib1g-dev \
     && docker-php-ext-install zip && \
+
     apt-get install -y \
         libgmp-dev \
     && docker-php-ext-install gmp && \
+
     apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype-dir \
     && docker-php-ext-install -j$(nproc) gd && \
+
     apt-get install -y libmagickwand-dev && \
     pecl install imagick && docker-php-ext-enable imagick && \
+
     apt-get install -y libxslt-dev && \
     docker-php-ext-install soap && \
     docker-php-ext-install xsl && \
