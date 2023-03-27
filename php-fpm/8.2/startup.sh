@@ -36,14 +36,14 @@ isArch="$(arch)"
 archCode="aarch64"
 if [ "$isArch" = "$archCode" ]; then
   curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-aarch64.tar.gz
-  curl --create-dirs -O --output-dir /tmp/ioncube https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_aarch64.tar.gz
+  # curl --create-dirs -O --output-dir /tmp/ioncube https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_aarch64.tar.gz
   tar -xzf /tmp/sourceguardian/loaders.linux-aarch64.tar.gz -C /tmp/sourceguardian
-  tar -xzf /tmp/ioncube/ioncube_loaders_lin_aarch64.tar.gz -C /tmp/ioncube
+  # tar -xzf /tmp/ioncube/ioncube_loaders_lin_aarch64.tar.gz -C /tmp/ioncube
 else
   curl --create-dirs -O --output-dir /tmp/sourceguardian https://www.sourceguardian.com/loaders/download/loaders.linux-x86_64.tar.gz
-  curl --create-dirs -O --output-dir /tmp/ioncube http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+  # curl --create-dirs -O --output-dir /tmp/ioncube http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
   tar -xzf /tmp/sourceguardian/loaders.linux-x86_64.tar.gz -C /tmp/sourceguardian
-  tar -xzf /tmp/ioncube/ioncube_loaders_lin_x86-64.tar.gz -C /tmp/ioncube
+  # tar -xzf /tmp/ioncube/ioncube_loaders_lin_x86-64.tar.gz -C /tmp/ioncube
 fi
 
 # Set up SourceGuardian
@@ -53,8 +53,8 @@ chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.$phpVersi
 echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ixed.$phpVersion.lin" > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
 
 # Set up IonCube
-mv /tmp/ioncube/ioncube/ioncube_loader_lin_$phpVersion.so /usr/local/lib/php/extensions/no-debug-non-zts-20190902
-echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ioncube_loader_lin_$phpVersion.so" > /usr/local/etc/php/conf.d/docker-php-ext-ioncube.ini
+# mv /tmp/ioncube/ioncube/ioncube_loader_lin_$phpVersion.so /usr/local/lib/php/extensions/no-debug-non-zts-20190902
+# echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20190902/ioncube_loader_lin_$phpVersion.so" > /usr/local/etc/php/conf.d/docker-php-ext-ioncube.ini
 
 # Gcsfuse
 if [[ -z "$gcsfuse_enable" || "$gcsfuse_enable" == "0" ]]; then
