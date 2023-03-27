@@ -32,7 +32,7 @@ jobs:
           username: igor-imaginemage
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
-          tags: [8.1, 8.1-amd64]
+          tags: "8.1, 8.1-amd64"
           workdir: php-fpm/8.1
 
   php_fpm_81_arm64:
@@ -48,5 +48,5 @@ jobs:
           username: igor-imaginemage
           password: ${{ secrets.NODE_AUTH_TOKEN }}
           registry: ghcr.io
-          tags: [8.1-arm64]
+          tags: "8.1-arm64"
           workdir: php-fpm/8.1
