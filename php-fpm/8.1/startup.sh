@@ -26,9 +26,16 @@ if [[ -z "$setup_upgrade" || "$setup_upgrade" == "0" ]]; then
   echo "Not running setup:upgrade"
 else
   cd /var/www/html/ && /usr/local/bin/composer install --no-dev --ignore-platform-reqs
+
+  # Zip the pub/static folder with all its contents and save it
+  cd /var/www/html/ && zip -r /var/www/html/pub/static.zip pub/static
+
   php /var/www/html/bin/magento setup:upgrade --keep-generated
   php /var/www/html/bin/magento setup:di:compile
-  php /var/www/html/bin/magento setup:static-content:deploy -f --jobs "$magento_static_content_jobs"
+  
+  # Unzip the pub/static folder
+  cd /var/www/html/ && unzip -o /var/www/html/pub/static.zip -d /var/www/html/pub/
+
   cd /var/www/html/ && /usr/local/bin/composer dump-autoload -o
 fi
 
