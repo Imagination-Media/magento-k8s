@@ -25,7 +25,7 @@ cd /var/www/html/ && chmod -R 750 app/etc/config.php
 if [[ -z "$setup_upgrade" || "$setup_upgrade" == "0" ]]; then
   echo "Not running setup:upgrade"
 else
-  cd /var/www/html/ && /usr/local/bin/composer install --no-dev --ignore-platform-reqs
+  cd /var/www/html/ && yes | /usr/local/bin/composer install --no-dev --ignore-platform-reqs
 
   # Zip the pub/static folder with all its contents and save it
   cd /var/www/html/ && zip -r /var/www/html/pub/static.zip pub/static
@@ -35,8 +35,9 @@ else
   
   # Unzip the pub/static folder
   cd /var/www/html/ && unzip -o /var/www/html/pub/static.zip -d /var/www/html/pub/
+  rm -rf /var/www/html/pub/static.zip
 
-  cd /var/www/html/ && /usr/local/bin/composer dump-autoload -o
+  cd /var/www/html/ && yes | /usr/local/bin/composer dump-autoload -o
 fi
 
 isArch="$(arch)"

@@ -1,6 +1,6 @@
 FROM php:7.3-fpm
 
-RUN apt-get -y update && apt-get install -y unzip vim wget curl git openssh-server cron bash-completion mariadb-client pv
+RUN apt-get -y update && apt-get install -y unzip vim wget curl git openssh-server cron bash-completion mariadb-client pv zip
 
 # Install NodeJS (16)
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh && \
@@ -42,34 +42,34 @@ RUN docker-php-ext-enable opcache && \
     docker-php-ext-install bcmath && \
     docker-php-ext-install pdo_mysql && \
     apt-get install -y \
-        libcurl4-openssl-dev \
+    libcurl4-openssl-dev \
     && docker-php-ext-install curl && \
 
     apt-get install -y \
-        libssl-dev \
+    libssl-dev \
     && docker-php-ext-install ftp phar && \
 
     apt-get install -y \
-        libicu-dev \
+    libicu-dev \
     && docker-php-ext-install intl && \
 
     apt-get install -y \
-        libmcrypt-dev \
+    libmcrypt-dev \
     && docker-php-ext-install session && \
 
     apt-get install -y \
-        libzip-dev \
-        zlib1g-dev \
+    libzip-dev \
+    zlib1g-dev \
     && docker-php-ext-install zip && \
 
     apt-get install -y \
-        libgmp-dev \
+    libgmp-dev \
     && docker-php-ext-install gmp && \
 
     apt-get install -y \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
     && docker-php-ext-configure gd --with-freetype-dir \
     && docker-php-ext-install -j$(nproc) gd && \
 
