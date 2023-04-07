@@ -800,3 +800,6 @@ A couple of Magento tools are installed and available to be used on these enviro
 
 ### magepack
 [magepack](https://github.com/magesuite/magepack) is a bold attempt in making Magento 2 frontend as fast as never before. It builds on experiences gained with Advanced JavaScript bundling guide and Baler to provide the best of both worlds - ease of use and superior performance.
+
+### corediff
+[Magento Core Diff](https://github.com/sansecio/corediff) is a tool released by [Sansec](https://sansec.io/getting-started) that allow us to verify if the core code was modified, in that way we can not only see if someone edited the core but also if these changes were made by a malware.

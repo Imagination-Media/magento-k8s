@@ -162,6 +162,14 @@ RUN apt-get install autoconf -y && \
     rm -rf go-pear.phar && \
     docker-php-ext-enable grpc
 
+# Install Sansec Magento Corediff (https://github.com/sansecio/corediff)
+RUN cd /var/www/util && \
+    osarch=$(uname -sm | tr 'LD ' 'ld-') && \
+    curl https://sansec.io/downloads/$osarch/corediff -O && \
+    chmod 755 corediff && \
+    ln -s /var/www/util/corediff /usr/bin/corediff && \
+    chown -R nginx:nginx /usr/bin/corediff
+
 # Expose SSH port
 EXPOSE 22
 
