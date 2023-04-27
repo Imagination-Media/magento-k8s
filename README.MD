@@ -18,6 +18,7 @@
 <br/>
 
 # Infrastructure
+
 The infrastructure for a Magento 2 website is made of the services required by the application such as the database, Redis for sessions, RabbitMQ for asynchronous jobs, etc.
 
 Then, we have NGINX & PHP-FPM instances that are going to serve the website.
@@ -27,6 +28,7 @@ To determine what version of PHP, RabbitMQ, Redis, and database to use, please c
 <img src="https://lucid.app/publicSegments/view/aa1f2018-8849-46e9-95ae-191cc4e8f726/image.png" alt="Infrastructure diagram" />
 
 ## File permissions & server access
+
 As an approach to maintain security and integrity across all the servers, the code base in the server is read-only, meaning SSH users can't modify anything except the pub/media and the var directories. This also prevents issues related to auto-scale and the codebase shared accross the different node pools (frontend, admin, and cron).
 
 Root access isn't allowed for SSH users. No one can login as root on the application servers.
@@ -43,6 +45,7 @@ Access denied error when trying to delete files
 <img src="https://github.com/Imagination-Media/magento-k8s/blob/master/screenshots/services.png" alt="Node Pools" />
 
 These are the services required by Magento to execute. We use the official docker images, and the version of each service may vary depending on the Adobe Commerce version.
+
 - [RabbitMQ](https://hub.docker.com/_/rabbitmq)
 - [Redis](https://hub.docker.com/_/redis)
 - [ElasticSearch](https://hub.docker.com/_/elasticsearch)
@@ -60,6 +63,7 @@ For the database, we always recommend using a database service offered by your c
 For the database we always recommend to use [MariaDB](https://hub.docker.com/_/mariadb) instead of [MySQL](https://hub.docker.com/_/mysql) as it has some improvements and performs a little bit better when compared to MySQL. But both versions are supported by our infrastructure.
 
 ## Application
+
 The Magento application mainly consists on two services, the webserver [NGINX](https://www.nginx.com/), and [PHP-FPM](https://www.php.net/manual/en/install.fpm.php).
 
 Our infrastructure will (for production apps) split the application into three different node pools. One will host Nginx & Php-fpm pods for the storefront traffic, one will host Nginx & Php-fpm pods for the admin traffic, and one will host one Php-fpm pod for the Magento cron. In that way, we dedicate resources to each one of these node pools to serve their traffic, the cron pod is never scaled up to prevent duplicated cron jobs, and the admin panel can be restricted only to specific IP addresses and also never scaled up.
@@ -67,6 +71,8 @@ Our infrastructure will (for production apps) split the application into three d
 For development environments, we can have just one node pool for all three services, but for production, it's highly recommended to split them.
 
 <img src="https://github.com/Imagination-Media/magento-k8s/blob/master/screenshots/node-pools.png" alt="Node Pools" />
+
+<br/>
 
 ## Proxy
 
@@ -97,6 +103,7 @@ Then, we use https://github.com/Imagination-Media/magento-k8s/blob/master/script
 And finally, https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.3-domains.yaml to define the certificates that are going to be generated and maintained.
 
 ## SSH
+
 The only instance (pod) exposed to the internet and that accepts SSH connections is the admin panel pod. As all of the pods are read-only pods, the SSH user can access and modify some directories, but the code base can't be modified.
 
 All SSH connections are managed through SSH keys. So, in order to give SSH access to a developer we must add their private key to the authorized keys. Please, read the GitHub Secrets section to know more about this.
@@ -108,6 +115,7 @@ This is the welcome message when SSHing the admin pod:
 <hr/>
 
 # Custom Images
+
 We developed two custom images, one for NGINX and one for PHP-FPM. These images have all the required plugins, configuration, and optimization for Magento 2 websites, so all the infrastructure deployed by our solution was created based on these two images along with images for other services.
 
 ## PHP-FPM
@@ -121,10 +129,20 @@ Our image has installed all the PHP [extensions/libraries required by Magento](h
 The dockerfiles for each PHP version are available inside https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm.
 
 We currently have images for:
+
+- [7.3](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/7.3)
 - [7.4](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/7.4)
 - [8.1](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/8.1)
+- [8.2](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/8.2)
+
+Each PHP version will have 3 released versions, phpversion-amd64, phpversion-arm64, and phpversion. For example, 8.2-amd64, 8.2-arm64, and 8.2.
+
+**phpversion and phpversion-amd64** are the images for regular x64 CPU, the most common CPU architecture used by hosting providers.
+
+**phpversion-arm64** is the image for ARM CPUs. We highly recommend using these processors if possible. They can offer up to 50% of performance improvements with up to 40% less costs when compared to a x64 CPU.
 
 ## NGINX
+
 <img src="https://destatic.blob.core.windows.net/images/nginx.png" width="40px" alt="Nginx Logo" />
 
 The NGINX image was created based on the official [NGINX image](https://hub.docker.com/_/nginx). We are using the version [1.23.2](https://hub.docker.com/layers/library/nginx/1.23.2/images/sha256-d5e4095bb4bcd2c40d6aba552f9ea66aacb1d0a5137a521dc6b0503b40b08921?context=explore).
@@ -134,14 +152,17 @@ We customized the NGINX configuration to use the PHP-FPM container to execute an
 The NGINX dockerfile and NGINX config files are available in https://github.com/Imagination-Media/magento-k8s/tree/master/nginx.
 
 ## Gcsfuse
+
 <img src="https://www.intelligencepartner.com/wp-content/uploads/2017/05/CloudStorage-4.png" width="60px" alt="Google Cloud Storage logo" />
 
 Google Cloud has a storage solution called [Cloud Storage](https://cloud.google.com/storage/). It's cheap, and for dev environments it's a good solution.
 
 ## Shared directories
+
 Shared directories are the directories that should be mounted as volumes across all the Nginx and Php-Fpm pods. They have files that are managed by the application.
 
 These directories are going to be:
+
 - **pub/media** - It's the directory where Magento stores the catalog, cms and any other images.
 - **var/log** - The Magento logs.
 - **var/report** - The Magento error reports.
@@ -153,9 +174,11 @@ Everything else, except the subdirectories inside the var directory are read onl
 <hr/>
 
 # Using the template
+
 The following topics are going to describe how to set up a Kubernetes infrastructure using this template and automating it with your GitHub repository.
 
 ## Creating base structure
+
 In your Github Magento code base, please create this directory structure:
 
     ├── codebase
@@ -165,14 +188,16 @@ In your Github Magento code base, please create this directory structure:
     │   ├──├──├──phpfpm
     │   ├──├── k8s
 
-
 The **docker** directory will host our custom images for our Magento project, and **k8s** will host the Kubernetes scripts used to set up the infrastructure.
 
 ## Setting up images
+
 First we need to use setup two images, one for Nginx & Php-Fpm. They are going to be created based on our [base images](https://github.com/Imagination-Media/magento-k8s#custom-images "base images"). These images are going to have the Magento code base, the compiled static content and the PHP scripts.
 
 ### Nginx
+
 Inside the **nginx** directory, please create a **Dockerfile** file with this content:
+
 ```yaml
 FROM ghcr.io/imagination-media/magento-k8s/nginx:latest
 
@@ -206,6 +231,7 @@ This image will download the repository, install composer packages, deploy the s
 The name of our image will be **ghcr.io/my-company/my-repository/nginx:myenvironment**. So, we will be generating images for each environment and use different tags for each one of these environments.
 
 ### Php-Fpm
+
 Inside the **phpfpm** directory, please create a **Dockerfile** file with this content:
 
 ```yaml
@@ -262,15 +288,24 @@ This image will download the repository, install composer packages, deploy the s
 
 The name of our image will be **ghcr.io/my-company/my-repository/php-fpm:myenvironment**. So, we will be generating images for each environment and use different tags for each one of these environments.
 
+<br/>
+
 ### app/etc/config.php
+
 In order to execute the di:compile and static deployment commands, we need to add the website scope configuration to the app/etc/config.php file. We can do that by running **bin/magento app:config:dump scopes**.
 
+<br/>
+
 ## K8S Files
+
 On this section we are going to describe the scripts involved on this infrastructure, what each script is used for, and how to deploy them.
 
 All the Kubernetes scripts are inside the https://github.com/Imagination-Media/magento-k8s/tree/master/scripts folder.
 
+<br/>
+
 ### Namespace
+
 The namespace as the name suggests, it's a namespace, or in other words, an isolated environment where things get deployed. For your project, we suggest having a different namespace per environment if they are going to share the same Kubernetes cluster.
 
 So the first script we must run is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/1-namespace.yaml.
@@ -279,7 +314,10 @@ So the first script we must run is https://github.com/Imagination-Media/magento-
 kubectl apply -f=scripts/1-namespace.yaml
 ```
 
+<br/>
+
 ### Configmap
+
 [Configmaps](https://kubernetes.io/docs/concepts/configuration/configmap/ "Configmaps") are values that are going to be used as environment variables in our pods. Our images require a couple of values to be set, to define things like the crontab if we run or not setup:upgrade, if we enable or not SSH, etc.
 
 In the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/2-configmap.yaml file, we create these configmaps for all of our application pods. So, we have different configmaps for the NGINX and PHP-FPM pods for the admin, for the storefront, and also for the cron.
@@ -291,7 +329,9 @@ In the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/2-co
 - **front-configmap-phpfpm** - PHP-FPM storefront configmap.
 
 These are the required values required by each configmap type:
+
 #### PHP-FPM
+
 - **setup_upgrade** - Set 1 or 0 to define if we will run the setup:upgrade command during the pod stand-up. If this option is set to 1, the pod will run setup:upgrade, di:compile, and then deploy:static:content.
 - **magento_static_content_jobs** - number of simultaneous jobs that are going to run when running the deploy static content command. This option is only used if the **setup_upgrade** option was set to 1.
 - **environment_name** - This variable is just used to help us to identify what environment is this environment,
@@ -303,21 +343,24 @@ These are the required values required by each configmap type:
 ```
 
 And then, the base64 value will be:
+
 ```
 KiAqICogKiAqIHBocCAvdmFyL3d3dy9odG1sL2Jpbi9tYWdlbnRvIGNyb246cnVuID4gL3Zhci93d3cvaHRtbC92YXIvbG9nL2Nyb24ubG9nCg==
 ```
 
 #### NGINX
-- **admin_domain** - The domain where the Magento admin panel is going to be served. For example, ***admin-magento-open-source.imaginationmedia.com***.
-- **frontend_domain** - The domain where the Magento storefront is going to be served. For example, ***admin-magento-open-source.imaginationmedia.com***.
-- **admin_store** - Store code used by the admin store in Magento. By default, it's always ***admin***.
-- **frontend_store** - Store code used by the storefront store in Magento. For example, ***store1***.
+
+- **admin_domain** - The domain where the Magento admin panel is going to be served. For example, **_admin-magento-open-source.imaginationmedia.com_**.
+- **frontend_domain** - The domain where the Magento storefront is going to be served. For example, **_admin-magento-open-source.imaginationmedia.com_**.
+- **admin_store** - Store code used by the admin store in Magento. By default, it's always **_admin_**.
+- **frontend_store** - Store code used by the storefront store in Magento. For example, **_store1_**.
 - **magento_mode** - Accepts the values 1 or 0, and it's used to define if Magento is running in production mode.
-- **php_fpm_service** - This is the variable where we define what the PHP-FPM service NGINX is going to use to process any PHP file. As we consistently deployed a PHP-FPM pod along with an NGINX pod, NGINX is just the web server, and any PHP code will be PHP-FPM's pod responsibility. So, on this variable, we will have something like ***magento-admin-phpfpm-service.magento-demo-production:9001*** as the value. It's the name of the service + the namespace + the port. The port will always be ***9001***, but the name of the service and the namespace may vary depending on your configuration.
+- **php_fpm_service** - This is the variable where we define what the PHP-FPM service NGINX is going to use to process any PHP file. As we consistently deployed a PHP-FPM pod along with an NGINX pod, NGINX is just the web server, and any PHP code will be PHP-FPM's pod responsibility. So, on this variable, we will have something like **_magento-admin-phpfpm-service.magento-demo-production:9001_** as the value. It's the name of the service + the namespace + the port. The port will always be **_9001_**, but the name of the service and the namespace may vary depending on your configuration.
 - **ip_addresses** - This is an optional value that can be used to restrict the IP addresses that are allowed to access the storefront. This is useful for development environments, blocking access from out of our team.
 - **admin_ip_addresses** - This is an optional value that can be used to restrict the IP addresses that are allowed to access the admin panel. This is a good practice for development and production environments, restricting access from out of our team.
 
 #### Gcsfuse
+
 If you are using gcsfuse to mount the volumes, you will also need to set up a couple of extra variables.
 
 You first need to generate a service account key from your GCP project, which will be used to mount the Cloud Storage volumes.
@@ -327,15 +370,20 @@ Once you have the service account key, these are the variables we are going to s
 - **gcsfuse_enable** - Set it with 1 to enable gcsfuse.
 - **gke_email** - The service account key email address.
 - **gke_service_account_key** - The base64 encoded service account key.
-- **gke_bucket_var_export** - The name of your Cloud storage bucket to mount the ***var/export*** directory.
-- **gke_bucket_var_report** - The name of your Cloud storage bucket to mount the ***var/report*** directory.
-- **gke_bucket_var_importexport** - The name of your Cloud storage bucket to mount the ***var/importexport*** directory.
-- **gke_bucket_var_log** - The name of your Cloud storage bucket to mount the ***var/log*** directory.
-- **gke_bucket_pub_media** - The name of your Cloud storage bucket to mount the ***pub/media*** directory.
+- **gke_bucket_var_export** - The name of your Cloud storage bucket to mount the **_var/export_** directory.
+- **gke_bucket_var_report** - The name of your Cloud storage bucket to mount the **_var/report_** directory.
+- **gke_bucket_var_importexport** - The name of your Cloud storage bucket to mount the **_var/importexport_** directory.
+- **gke_bucket_var_log** - The name of your Cloud storage bucket to mount the **_var/log_** directory.
+- **gke_bucket_pub_media** - The name of your Cloud storage bucket to mount the **_pub/media_** directory.
 
 ### Services
+
 These are the scripts responsible to stand-up the services used by Magento.
+
+<br/>
+
 #### Redis for FPC (Full Page Cache)
+
 Redis is going to be used as the service to store the Magento Full Page Cache, and we deploy it using the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/3-redis-fpc-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/6-redis-fpc-service.yaml.
 
 ```ssh
@@ -343,7 +391,10 @@ kubectl apply -f=scripts/3-redis-fpc-deployment.yaml
 kubectl apply -f=scripts/6-redis-fpc-service.yaml
 ```
 
+<br/>
+
 #### Elasticsearch
+
 Magento uses [ElasticSearch](https://experienceleague.adobe.com/docs/commerce-operations/installation-guide/prerequisites/search-engine/overview.html "ElasticSearch") to index search results, layered navigation filters, etc.
 
 To deploy ElasticSearch we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/4-elasticsearch-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/7-elasticsearch-service.yaml.
@@ -353,7 +404,10 @@ kubectl apply -f=scripts/4-elasticsearch-deployment.yaml
 kubectl apply -f=scripts/7-elasticsearch-service.yaml
 ```
 
+<br/>
+
 #### RabbitMQ
+
 Magento uses [RabbitMQ](https://experienceleague.adobe.com/docs/commerce-operations/installation-guide/prerequisites/rabbitmq.html "RabbitMQ") for asynchronous jobs.
 
 To deploy RabbitMQ we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/5-rabbitmq-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/8-rabbitmq-service.yaml.
@@ -363,7 +417,10 @@ kubectl apply -f=scripts/5-rabbitmq-deployment.yaml
 kubectl apply -f=scripts/8-rabbitmq-service.yaml
 ```
 
+<br/>
+
 #### Redis Sessions
+
 We use Redis for the customer and admin sessions. Redis has a better performance when compared to session files, and also when compared to database sessions.
 
 We can use one of the AWS, GPC, Azure services to spin up a Redis instance for sessions, because they are data we can't lose in case of a pod restart, they should be a persistent volume.
@@ -375,25 +432,35 @@ kubectl apply -f=scripts/9-session/9-redis-sessions.yaml
 ```
 
 ### Image Secret
+
 We use [GitHub's container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry "GitHub's container registry") service to generate and store container images. And as our repositories are private, only authenticated users can access them and download these images.
 
 Kubernetes has [this guide](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ "this guide") that explains how to pull images from a private registry.
 
 Once we generate the token we can have an image script like https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/17-image-secret.yaml.
 
+<br/>
+
 ### Database
+
 If you are running a development environment you can deploy a database pod within a Kubernetes service using the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/10-database/10-database.yaml script as an example.
 
-The database name will be ***magento***, the password for the root user is going to be ***root***, and to access the database the host will be ***database-service.my-namespace-name*** on the port 33006.
+The database name will be **_magento_**, the password for the root user is going to be **_root_**, and to access the database the host will be **_database-service.my-namespace-name_** on the port 33006.
 
-***For production environments please use of the one services provided by your cloud provider, like Cloud SQL (GCP), RDS (AWS), etc. These services provide multi-cluster environments that perform a lot better than compared to a single pod database, they also manage backups, etc.***
+**_For production environments please use of the one services provided by your cloud provider, like Cloud SQL (GCP), RDS (AWS), etc. These services provide multi-cluster environments that perform a lot better than compared to a single pod database, they also manage backups, etc._**
+
+<br/>
 
 ### Ingress
+
 As the Magento application has to exposed to the internet (the admin and the storefront), we must have a [Kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/ "Kubernetes ingress") to expose the services. On https://kubernetes.io/docs/concepts/services-networking/ingress/ we described our strategy to proxy this application, and to deploy the ingress service and its configuration we use the directories inside https://github.com/Imagination-Media/magento-k8s/tree/master/scripts/21-ingress.
 
 We have two directories there, **local** and **production**. One, to be used for local environments. and the other one for production environments.
 
+<br/>
+
 #### Cert Manager
+
 Before deploying Envoy as the proxy/load balancer/ingress, we must deploy the cert manager service, responsible to be a service that generates SSL certificates.
 
 We use the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.1-cert-manager.yaml to deploy the cert manager service.
@@ -402,7 +469,10 @@ We use the script https://github.com/Imagination-Media/magento-k8s/blob/master/s
 kubectl apply -f=scripts/21-ingress/production/22.1-cert-manager.yaml
 ```
 
+<br/>
+
 #### SSL
+
 To start the SSL management service, we also need to define who owns the SSL certificates. For that we need to deploy a [ClusterIssuer](https://cert-manager.io/docs/concepts/issuer/ "ClusterIssuer").
 
 We can deploy it running the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.2-lets-encrypt.yaml.
@@ -416,7 +486,10 @@ kubectl apply -f=scripts/21-ingress/production/22.2-lets-encrypt.yaml
 kubectl apply -f=scripts/21-ingress/production/22.3-domains.yaml
 ```
 
+<br/>
+
 #### Envoy
+
 To deploy [Envoy Contour](https://projectcontour.io/ "Envoy Contour"), we have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/21-contour.yaml script.
 
 Once Envoy is deployed we can configure the routes that are going to be managed by Envoy. So, we define the domains that attached to the Kubernetes services. We have the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/23-ingress.yaml where we define all of that.
@@ -426,7 +499,10 @@ kubectl apply -f=scripts/21-ingress/production/21-contour.yaml
 kubectl apply -f=scripts/21-ingress/production/23-ingress.yaml
 ```
 
+<br/>
+
 ### Admin
+
 The admin panel will be deployed with one PHP-FPM pod, and one NGINX pod. The PHP-FPM pod will be exposed to the internet for SSH connections (enable_ssh is set to 1 on the admin-configmap-phpfpm configmap). The magento setup:upgrade command will also be executed on the PHP-FPM pod, so any database change, upgrade, downgrade will be performed by this pod (setup_upgrade is set to 1 on the admin-configmap-phpfpm configmap).
 
 Admin pods aren't scaled up, they are single instances.
@@ -438,7 +514,10 @@ kubectl apply -f=scripts/18.1-magento-admin-phpfpm.yaml
 kubectl apply -f=scripts/18.2-magento-admin-nginx.yaml
 ```
 
+<br/>
+
 ### Cron
+
 For the cron we deploy a single PHP-FPM cron pod, and this pod won't be scaled up. As the cron doesn't serve any HTTP/HTTPS traffic there's no need to have an NGINX pod.
 
 The script we can use to deploy the cron pod is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/19-magento-cron-phpfpm.yaml.
@@ -447,7 +526,10 @@ The script we can use to deploy the cron pod is https://github.com/Imagination-M
 kubectl apply -f=scripts/19-magento-cron-phpfpm.yaml
 ```
 
+<br/>
+
 ### Storefront
+
 The storefront will be deployed with one PHP-FPM pod, and one NGINX pod.
 The scripts used to deploy it are https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.1-magento-front-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.2-magento-front-nginx.yaml.
 
@@ -462,36 +544,46 @@ kubectl apply -f=scripts/20.3-magento-front-phpfpm-hpa.yaml
 kubectl apply -f=scripts/20.4-magento-front-phpfpm-hpa.yaml
 ```
 
+<br/>
+
 ### Clean Nodes
+
 We have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-clean-nodes-cron.yaml script which deploys our https://github.com/Imagination-Media/gcp-kubernetes-clean-nodes script (only for Google Cloud projects) which is used to clean up any temporary data and files from Kubernetes nodes.
 
+<br/>
+
 ### Using the services
+
 To use the Redis, ElasticSearch, RabbitMQ and any service deployed by our Kubernetes scripts we always use as the host the name of the service + the namespace.
 
-For example, for Redis FPC we use ***redis-fpc-service.magento-demo-production***.
+For example, for Redis FPC we use **_redis-fpc-service.magento-demo-production_**.
 
-For ElasticSearch we use ***elasticsearch-service.magento-demo-production***.
+For ElasticSearch we use **_elasticsearch-service.magento-demo-production_**.
+
+<br/>
 
 ### Node pools
+
 [A node poo](https://cloud.google.com/kubernetes-engine/docs/concepts/node-pools "A node poo")l is a group of nodes (machines) we dedicate to deploy one or more type of pods. This is a good production practice because we can dedicate machines specifying what they are used for, and in that way we prevent nodes to be shared between different deployments.
 
 Our scripts were designed to be deployed on Google Cloud, so we use GCP expressions to deploy those nods in specific node pools. For example:
 
 ```yaml
 affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: 'cloud.google.com/gke-nodepool'
-                    operator: In
-                    values:
-                      - services
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: "cloud.google.com/gke-nodepool"
+              operator: In
+              values:
+                - services
 ```
 
-On this example (from https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/4-elasticsearch-deployment.yaml), we deploy the ElasticSearch pods in the ***services*** node pool. So, we created a node pool named services, it has one or more nodes (instances) there, and they are used to deploy these pods.
+On this example (from https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/4-elasticsearch-deployment.yaml), we deploy the ElasticSearch pods in the **_services_** node pool. So, we created a node pool named services, it has one or more nodes (instances) there, and they are used to deploy these pods.
 
 Same for the cron PHP-FPM (https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/19-magento-cron-phpfpm.yam), we have this:
+
 ```ssh
 affinity:
         nodeAffinity:
@@ -503,38 +595,58 @@ affinity:
                     values:
                       - cron
 ```
+
 We have a cron node pool we nodes(instances) dedicated to this cron deployment.
 
+<br/>
+
 ### ARM Images
+
 ARM is a new architecture for processors being used by a various number of manufacturers.
 
 Most of the cloud providers have ARM instances that can be used to deploy the infrastructure. They are faster and cheaper than regular x86 and x64 instances.
 
-Google Cloud has [TAU instances](https://www.arm.com/products/silicon-ip-cpu "TAU instances"), AWS has [Graviton instances](https://aws.amazon.com/pt/ec2/graviton/ "Graviton instances"), Azure has [Ampre instances](https://azure.microsoft.com/en-us/blog/azure-virtual-machines-with-ampere-altra-arm-based-processors-generally-available/ "Ampre instances").
+Google Cloud has [TAU instances](https://www.arm.com/products/silicon-ip-cpu "TAU instances"), AWS has [Graviton instances](https://aws.amazon.com/pt/ec2/graviton/ "Graviton instances"), Azure has [Ampere instances](https://azure.microsoft.com/en-us/blog/azure-virtual-machines-with-ampere-altra-arm-based-processors-generally-available/ "Ampre instances").
 
 This infrastructure is compatible with ARM instances, and we strongly recommend to use them. Make sure the PHP version, ElasticSearch version, and Redis version are compatible and support ARM instances. Some old versions of these services can not be compatible with the ARM architecture.
 
+<br/>
+
 ## GitHub configuration
+
 The following topics are going to describe how to use these scripts along with your Magento codebase repository, and how to set up your GitHub repository with environments, secrets, CI/CD, etc.
 
+<br/>
+
 ### Environments
+
 First of all, we need to create the environments in GitHub for each cloud environment we are going to have. So, for example, if we have the production website, a pre-production environment and a staging environment we will have to create these same three environments in GitHub.
 
 To create the environments please follow [this GitHub guide.](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment "this GitHub guide.")
 
 Please also assign specific branches for each environment. For example, set the master branch on the production branch, staging branch on the staging environment, etc.
 
+<br/>
+
 ### Secrets
+
 [GitHub secrets ](https://docs.github.com/en/actions/security-guides/encrypted-secrets "GitHub secrets") are variables used in our CI/CD process, and they store values as secrets, meaning they are not going to be visible for anyone. We need to set up global secrets and environment secrets. Global secrets are available for all environments, and environment secrets are going to be set on each one of the environments we have created, and they are shared between different environments.
 
+<br/>
+
 #### General secrets
+
 - **GOOGLE_APPLICATION_CREDENTIALS** - This is used for Google Cloud projects. On this secret we store a base64 encoded service account key. This service account must have access to connect with the Kubernetes cluster where the application was deployed.
 - **NODE_AUTH_TOKEN** - [A token generated](https://github.com/settings/tokens "A token generated") from a GitHub account. This token is used to publish the container images, so it must have access to read/publish containers.
 - **PROJECT_ID** - This is the Google Cloud project id. Only used for Google Cloud projects.
 - **SLACK_WEBHOOK** - The slack webhook URL to notify slack users when the deployment was completed.
 
+<br/>
+
 #### Environment secrets
+
 - **APP_ETC_ENV** - the Magento app/etc/env.php file used by Magento. An example of this file is:
+
 ```php
 <?php
 return [
@@ -763,9 +875,11 @@ return [
     ]
 ];
 ```
+
 The admin path for the admin must be **IMADMIN**, it's the default admin path for our images.
 
 - **SSH_AUTHORIZED_KEYS** - it's a file with all the public ssh keys that are authorized to SSH into the admin php-fpm pod. For example:
+
 ```ssh
 #Igor
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChHpe8MuhsBZNdc9SEUPhAwOgtSAb8U9iU9i3tMzOM0qujliwcZ9J4M2sDky+63FkUOnEPEEwb5w2QEvppqHal7lsh1ZN9RNUVbV4pIg+ePjI5534JNlkqHqtHmCmtZW30IYsCEKl+jmub4sd1SG3PpE3P3fcGWxzHH4xfl6+RRrQXw1H/eoksh7KXWTR+zMY5bNJ1h/kk1cY+MobrzeXjnOKPzdp69cTkiMtzqmEDEZutTVpZD6LX02YNbZ7shNVk8ZNfpVZohZQ22DHfbGPkt2KFeQmLQrBJviSlzxxWThq0LGb/oGp93g9fRh4TGKaNd2quhOYfISHwRVWeNOKV igor@imaginationmedia.com
@@ -773,7 +887,10 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChHpe8MuhsBZNdc9SEUPhAwOgtSAb8U9iU9i3tMzOM
 
 - **IMAGE_TAG** - the tag of the image that's going to be released. You can use the environment name (or code) here. For example production for the production website. staging for the staging website, etc.
 
+<br/>
+
 ### Actions
+
 For every environment that we are going to deploy, we must set one GitHub action script, using the example file https://github.com/Imagination-Media/magento-k8s/action-example.yaml.
 
 On the **php-version: '8.1'** value please set the PHP version your project is using.
@@ -782,24 +899,34 @@ On **platforms: linux/arm64** set the architecture of the servers you are going 
 
 Adjust the name of the images to match your repository name. For example: name: **imagination-media/magento-demo-open-source/nginx**
 
+<br/>
+
 ### Setting up images and scripts
+
 To use this infrastructure with your Magento codebase first create a **server** directory in your codebase with two subdirectories, one named **docker** and another name **k8s**.
 
 Inside the **docker** directory please copy the nginx and phpfpm directories from https://github.com/Imagination-Media/magento-k8s/project-images.
 
 Inside **k8s** create one folder for each environment that you have. For example, production. And then, inside each one of these environment directories you copy the files from https://github.com/Imagination-Media/magento-k8s/scripts.
 
+<br/>
+
 ## Magento Tools
+
 A couple of Magento tools are installed and available to be used on these environments (under the PHP-FPM container). They help developers if the containers are used for development purposes, and even to maintain the website.
 
 ### n98-magerun2
+
 [n98-magerun2](https://github.com/netz98/n98-magerun2) CLI Tools provides some handy tools to work with Magento / Mage-OS / Adobe Commerce from command line.
 
 ### mage2tv-cache-clean
-[mage2tv-cache-clean](https://github.com/mage2tv/magento-cache-clean) is a *bin/magento cache:clean* file watcher. It allows us to clean the cache for specific areas/pages once files that are used in those areas are modified.
+
+[mage2tv-cache-clean](https://github.com/mage2tv/magento-cache-clean) is a _bin/magento cache:clean_ file watcher. It allows us to clean the cache for specific areas/pages once files that are used in those areas are modified.
 
 ### magepack
+
 [magepack](https://github.com/magesuite/magepack) is a bold attempt in making Magento 2 frontend as fast as never before. It builds on experiences gained with Advanced JavaScript bundling guide and Baler to provide the best of both worlds - ease of use and superior performance.
 
 ### corediff
+
 [Magento Core Diff](https://github.com/sansecio/corediff) is a tool released by [Sansec](https://sansec.io/getting-started) that allow us to verify if the core code was modified, in that way we can not only see if someone edited the core but also if these changes were made by a malware.
