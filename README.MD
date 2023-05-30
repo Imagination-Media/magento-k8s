@@ -130,6 +130,8 @@ The dockerfiles for each PHP version are available inside https://github.com/Ima
 
 We currently have images for:
 
+- [7.1](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/7.1)
+- [7.2](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/7.2)
 - [7.3](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/7.3)
 - [7.4](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/7.4)
 - [8.1](https://github.com/Imagination-Media/magento-k8s/tree/master/php-fpm/8.1)
