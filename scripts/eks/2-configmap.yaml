@@ -1,0 +1,105 @@
+#Admin configMap (php-fpm)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-configmap-phpfpm
+  namespace: magento-demo-production
+data:
+  setup_upgrade: "1"
+  magento_static_content_jobs: "4"
+  environment_name: "production"
+  enable_ssh: "1"
+  gke_email: ""
+  gke_bucket_var_export: ""
+  gke_bucket_var_importexport: ""
+  gke_bucket_var_log: ""
+  gke_bucket_var_report: ""
+  gke_bucket_pub_media: ""
+  gke_service_account_key: ""
+
+---
+
+#Admin configMap (nginx)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-configmap-nginx
+  namespace: magento-demo-production
+data:
+  environment_name: "production"
+  admin_domain: "admin-magento-open-source.imaginationmedia.com"
+  frontend_domain: "magento-open-source.imaginationmedia.com"
+  admin_store: "admin"
+  frontend_store: "default"
+  magento_mode: "production"
+  php_fpm_service: "magento-admin-phpfpm-service.magento-demo-production:9001"
+  gke_email: ""
+  gke_bucket_var_export: ""
+  gke_bucket_var_importexport: ""
+  gke_bucket_var_log: ""
+  gke_bucket_var_report: ""
+  gke_bucket_pub_media: ""
+  gke_service_account_key: ""
+
+---
+
+#Cron configMap (php-fpm)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cron-configmap-phpfpm
+  namespace: magento-demo-production
+data:
+  environment_name: "production"
+  cron_jobs: "KiAqICogKiAqIHBocCAvdmFyL3d3dy9odG1sL2Jpbi9tYWdlbnRvIGNyb246cnVuID4gL3Zhci93d3cvaHRtbC92YXIvbG9nL2Nyb24ubG9nCg=="
+  gke_email: ""
+  gke_bucket_var_export: ""
+  gke_bucket_var_importexport: ""
+  gke_bucket_var_log: ""
+  gke_bucket_var_report: ""
+  gke_bucket_pub_media: ""
+  gke_service_account_key: ""
+
+
+---
+
+#Storefront configMap (php-fpm)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: front-configmap-phpfpm
+  namespace: magento-demo-production
+data:
+  environment_name: "production"
+  gke_email: ""
+  gke_bucket_var_export: ""
+  gke_bucket_var_importexport: ""
+  gke_bucket_var_log: ""
+  gke_bucket_var_report: ""
+  gke_bucket_pub_media: ""
+  gke_service_account_key: ""
+
+
+---
+
+#Storefront configMap (nginx)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: front-configmap-nginx
+  namespace: magento-demo-production
+data:
+  environment_name: "production"
+  admin_domain: "admin-magento-open-source.imaginationmedia.com"
+  frontend_domain: "magento-open-source.imaginationmedia.com"
+  admin_store: "admin"
+  frontend_store: "default"
+  magento_mode: "production"
+  php_fpm_service: "magento-front-phpfpm-service.magento-demo-production:9003"
+  gke_email: ""
+  gke_bucket_var_export: ""
+  gke_bucket_var_importexport: ""
+  gke_bucket_var_log: ""
+  gke_bucket_var_report: ""
+  gke_bucket_pub_media: ""
+  gke_service_account_key: ""

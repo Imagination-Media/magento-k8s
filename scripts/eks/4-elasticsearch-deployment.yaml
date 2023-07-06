@@ -1,0 +1,45 @@
+#ElasticSearch
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-deployment
+  namespace: magento-demo-production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "true"
+    spec:
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:7.17.7
+          env:
+          - name: discovery.type
+            value: "single-node"
+          resources:
+            limits:
+              memory: '1600Mi'
+              cpu: '400m'
+            requests:
+              memory: '1600Mi'
+              cpu: '400m'
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Equal"
+          value: "arm64"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'kubernetes.io/arch'
+                    operator: In
+                    values:
+                      - arm64
