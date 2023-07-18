@@ -84,9 +84,9 @@ We use [Envoy Contour](https://projectcontour.io/) as the load balancer and prox
 
 With Envoy we route the traffic to the admin and storefront instances, and it's used as the load balancer instead of the default load balancer offered by the cloud providers.
 
-To set up Envoy we run the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/21-contour.yaml script.
+To set up Envoy we run the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/21-contour.yaml script.
 
-Then, we use https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/23-ingress.yaml to define the domains that are going to be managed by Envoy and what k8s service is going to be used to serve each one of them.
+Then, we use https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/23-ingress.yaml to define the domains that are going to be managed by Envoy and what k8s service is going to be used to serve each one of them.
 
 ## SSL Certificates
 
@@ -96,11 +96,11 @@ Our Kubernetes infrastructure uses [cert-manager](https://github.com/cert-manage
 
 With that, we can generate and renew [Let's Encrypt](https://letsencrypt.org/) certificates whenever needed.
 
-To start the cert manager service we use the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.1-cert-manager.yaml script.
+To start the cert manager service we use the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/22.1-cert-manager.yaml script.
 
-Then, we use https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.2-lets-encrypt.yaml to create the certificate issuer.
+Then, we use https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/22.2-lets-encrypt.yaml to create the certificate issuer.
 
-And finally, https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.3-domains.yaml to define the certificates that are going to be generated and maintained.
+And finally, https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/22.3-domains.yaml to define the certificates that are going to be generated and maintained.
 
 ## SSH
 
@@ -302,7 +302,7 @@ In order to execute the di:compile and static deployment commands, we need to ad
 
 On this section we are going to describe the scripts involved on this infrastructure, what each script is used for, and how to deploy them.
 
-All the Kubernetes scripts are inside the https://github.com/Imagination-Media/magento-k8s/tree/master/scripts folder.
+All the Kubernetes scripts are inside the https://github.com/Imagination-Media/magento-k8s/tree/master/scripts folder. Check "eks" and "gcp" subfolders for a respective cloud.
 
 <br/>
 
@@ -310,10 +310,10 @@ All the Kubernetes scripts are inside the https://github.com/Imagination-Media/m
 
 The namespace as the name suggests, it's a namespace, or in other words, an isolated environment where things get deployed. For your project, we suggest having a different namespace per environment if they are going to share the same Kubernetes cluster.
 
-So the first script we must run is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/1-namespace.yaml.
+So the first script we must run is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/1-namespace.yaml.
 
 ```ssh
-kubectl apply -f=scripts/1-namespace.yaml
+kubectl apply -f=scripts/gcp/1-namespace.yaml
 ```
 
 <br/>
@@ -322,7 +322,7 @@ kubectl apply -f=scripts/1-namespace.yaml
 
 [Configmaps](https://kubernetes.io/docs/concepts/configuration/configmap/ "Configmaps") are values that are going to be used as environment variables in our pods. Our images require a couple of values to be set, to define things like the crontab if we run or not setup:upgrade, if we enable or not SSH, etc.
 
-In the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/2-configmap.yaml file, we create these configmaps for all of our application pods. So, we have different configmaps for the NGINX and PHP-FPM pods for the admin, for the storefront, and also for the cron.
+In the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/2-configmap.yaml file, we create these configmaps for all of our application pods. So, we have different configmaps for the NGINX and PHP-FPM pods for the admin, for the storefront, and also for the cron.
 
 - **admin-configmap-phpfpm** - PHP-FPM admin panel configmap.
 - **admin-configmap-nginx** - NGINX admin panel configmap.
@@ -386,11 +386,11 @@ These are the scripts responsible to stand-up the services used by Magento.
 
 #### Redis for FPC (Full Page Cache)
 
-Redis is going to be used as the service to store the Magento Full Page Cache, and we deploy it using the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/3-redis-fpc-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/6-redis-fpc-service.yaml.
+Redis is going to be used as the service to store the Magento Full Page Cache, and we deploy it using the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/3-redis-fpc-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/6-redis-fpc-service.yaml.
 
 ```ssh
-kubectl apply -f=scripts/3-redis-fpc-deployment.yaml
-kubectl apply -f=scripts/6-redis-fpc-service.yaml
+kubectl apply -f=scripts/gcp/3-redis-fpc-deployment.yaml
+kubectl apply -f=scripts/gcp/6-redis-fpc-service.yaml
 ```
 
 <br/>
@@ -399,11 +399,11 @@ kubectl apply -f=scripts/6-redis-fpc-service.yaml
 
 Magento uses [ElasticSearch](https://experienceleague.adobe.com/docs/commerce-operations/installation-guide/prerequisites/search-engine/overview.html "ElasticSearch") to index search results, layered navigation filters, etc.
 
-To deploy ElasticSearch we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/4-elasticsearch-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/7-elasticsearch-service.yaml.
+To deploy ElasticSearch we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/4-elasticsearch-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/7-elasticsearch-service.yaml.
 
 ```ssh
-kubectl apply -f=scripts/4-elasticsearch-deployment.yaml
-kubectl apply -f=scripts/7-elasticsearch-service.yaml
+kubectl apply -f=scripts/gcp/4-elasticsearch-deployment.yaml
+kubectl apply -f=scripts/gcp/7-elasticsearch-service.yaml
 ```
 
 <br/>
@@ -412,11 +412,11 @@ kubectl apply -f=scripts/7-elasticsearch-service.yaml
 
 Magento uses [RabbitMQ](https://experienceleague.adobe.com/docs/commerce-operations/installation-guide/prerequisites/rabbitmq.html "RabbitMQ") for asynchronous jobs.
 
-To deploy RabbitMQ we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/5-rabbitmq-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/8-rabbitmq-service.yaml.
+To deploy RabbitMQ we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/5-rabbitmq-deployment.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/8-rabbitmq-service.yaml.
 
 ```ssh
-kubectl apply -f=scripts/5-rabbitmq-deployment.yaml
-kubectl apply -f=scripts/8-rabbitmq-service.yaml
+kubectl apply -f=scripts/gcp/5-rabbitmq-deployment.yaml
+kubectl apply -f=scripts/gcp/8-rabbitmq-service.yaml
 ```
 
 <br/>
@@ -427,10 +427,10 @@ We use Redis for the customer and admin sessions. Redis has a better performance
 
 We can use one of the AWS, GPC, Azure services to spin up a Redis instance for sessions, because they are data we can't lose in case of a pod restart, they should be a persistent volume.
 
-But in case you also want to deploy it as a Kubernetes pod we can use the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/9-session/9-redis-sessions.yaml script.
+But in case you also want to deploy it as a Kubernetes pod we can use the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/9-session/9-redis-sessions.yaml script.
 
 ```ssh
-kubectl apply -f=scripts/9-session/9-redis-sessions.yaml
+kubectl apply -f=scripts/gcp/9-session/9-redis-sessions.yaml
 ```
 
 ### Image Secret
@@ -439,13 +439,13 @@ We use [GitHub's container registry](https://docs.github.com/en/packages/working
 
 Kubernetes has [this guide](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ "this guide") that explains how to pull images from a private registry.
 
-Once we generate the token we can have an image script like https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/17-image-secret.yaml.
+Once we generate the token we can have an image script like https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/17-image-secret.yaml.
 
 <br/>
 
 ### Database
 
-If you are running a development environment you can deploy a database pod within a Kubernetes service using the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/10-database/10-database.yaml script as an example.
+If you are running a development environment you can deploy a database pod within a Kubernetes service using the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/10-database/10-database.yaml script as an example.
 
 The database name will be **_magento_**, the password for the root user is going to be **_root_**, and to access the database the host will be **_database-service.my-namespace-name_** on the port 33006.
 
@@ -455,7 +455,7 @@ The database name will be **_magento_**, the password for the root user is going
 
 ### Ingress
 
-As the Magento application has to exposed to the internet (the admin and the storefront), we must have a [Kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/ "Kubernetes ingress") to expose the services. On https://kubernetes.io/docs/concepts/services-networking/ingress/ we described our strategy to proxy this application, and to deploy the ingress service and its configuration we use the directories inside https://github.com/Imagination-Media/magento-k8s/tree/master/scripts/21-ingress.
+As the Magento application has to exposed to the internet (the admin and the storefront), we must have a [Kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/ "Kubernetes ingress") to expose the services. On https://kubernetes.io/docs/concepts/services-networking/ingress/ we described our strategy to proxy this application, and to deploy the ingress service and its configuration we use the directories inside https://github.com/Imagination-Media/magento-k8s/tree/master/scripts/gcp/21-ingress.
 
 We have two directories there, **local** and **production**. One, to be used for local environments. and the other one for production environments.
 
@@ -465,10 +465,10 @@ We have two directories there, **local** and **production**. One, to be used for
 
 Before deploying Envoy as the proxy/load balancer/ingress, we must deploy the cert manager service, responsible to be a service that generates SSL certificates.
 
-We use the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.1-cert-manager.yaml to deploy the cert manager service.
+We use the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/22.1-cert-manager.yaml to deploy the cert manager service.
 
 ```ssh
-kubectl apply -f=scripts/21-ingress/production/22.1-cert-manager.yaml
+kubectl apply -f=scripts/gcp/21-ingress/production/22.1-cert-manager.yaml
 ```
 
 <br/>
@@ -477,28 +477,28 @@ kubectl apply -f=scripts/21-ingress/production/22.1-cert-manager.yaml
 
 To start the SSL management service, we also need to define who owns the SSL certificates. For that we need to deploy a [ClusterIssuer](https://cert-manager.io/docs/concepts/issuer/ "ClusterIssuer").
 
-We can deploy it running the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.2-lets-encrypt.yaml.
+We can deploy it running the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/22.2-lets-encrypt.yaml.
 
 On **email: info@imaginationmedia.com** you define the email address of who owns the SSL certificates.
 
-Then, we have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/22.3-domains.yaml script where we define the SSL certificates that are going to be generated, and what's the domain used on each one of them.
+Then, we have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/22.3-domains.yaml script where we define the SSL certificates that are going to be generated, and what's the domain used on each one of them.
 
 ```ssh
-kubectl apply -f=scripts/21-ingress/production/22.2-lets-encrypt.yaml
-kubectl apply -f=scripts/21-ingress/production/22.3-domains.yaml
+kubectl apply -f=scripts/gcp/21-ingress/production/22.2-lets-encrypt.yaml
+kubectl apply -f=scripts/gcp/21-ingress/production/22.3-domains.yaml
 ```
 
 <br/>
 
 #### Envoy
 
-To deploy [Envoy Contour](https://projectcontour.io/ "Envoy Contour"), we have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/21-contour.yaml script.
+To deploy [Envoy Contour](https://projectcontour.io/ "Envoy Contour"), we have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/21-contour.yaml script.
 
-Once Envoy is deployed we can configure the routes that are going to be managed by Envoy. So, we define the domains that attached to the Kubernetes services. We have the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-ingress/production/23-ingress.yaml where we define all of that.
+Once Envoy is deployed we can configure the routes that are going to be managed by Envoy. So, we define the domains that attached to the Kubernetes services. We have the script https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-ingress/production/23-ingress.yaml where we define all of that.
 
 ```ssh
-kubectl apply -f=scripts/21-ingress/production/21-contour.yaml
-kubectl apply -f=scripts/21-ingress/production/23-ingress.yaml
+kubectl apply -f=scripts/gcp/21-ingress/production/21-contour.yaml
+kubectl apply -f=scripts/gcp/21-ingress/production/23-ingress.yaml
 ```
 
 <br/>
@@ -509,11 +509,11 @@ The admin panel will be deployed with one PHP-FPM pod, and one NGINX pod. The PH
 
 Admin pods aren't scaled up, they are single instances.
 
-To deploy the PHP-FPM and the NGINX pods we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/18.1-magento-admin-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/18.2-magento-admin-nginx.yaml.
+To deploy the PHP-FPM and the NGINX pods we use the scripts https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/18.1-magento-admin-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/18.2-magento-admin-nginx.yaml.
 
 ```ssh
-kubectl apply -f=scripts/18.1-magento-admin-phpfpm.yaml
-kubectl apply -f=scripts/18.2-magento-admin-nginx.yaml
+kubectl apply -f=scripts/gcp/18.1-magento-admin-phpfpm.yaml
+kubectl apply -f=scripts/gcp/18.2-magento-admin-nginx.yaml
 ```
 
 <br/>
@@ -522,10 +522,10 @@ kubectl apply -f=scripts/18.2-magento-admin-nginx.yaml
 
 For the cron we deploy a single PHP-FPM cron pod, and this pod won't be scaled up. As the cron doesn't serve any HTTP/HTTPS traffic there's no need to have an NGINX pod.
 
-The script we can use to deploy the cron pod is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/19-magento-cron-phpfpm.yaml.
+The script we can use to deploy the cron pod is https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/19-magento-cron-phpfpm.yaml.
 
 ```ssh
-kubectl apply -f=scripts/19-magento-cron-phpfpm.yaml
+kubectl apply -f=scripts/gcp/19-magento-cron-phpfpm.yaml
 ```
 
 <br/>
@@ -533,24 +533,24 @@ kubectl apply -f=scripts/19-magento-cron-phpfpm.yaml
 ### Storefront
 
 The storefront will be deployed with one PHP-FPM pod, and one NGINX pod.
-The scripts used to deploy it are https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.1-magento-front-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.2-magento-front-nginx.yaml.
+The scripts used to deploy it are https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/20.1-magento-front-phpfpm.yaml and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/20.2-magento-front-nginx.yaml.
 
 Storefront pods are scaled up and down according to the resources usage. To scale up and down the NGINX and the PHP-FPM instances we use [HorizontalPodAutoscaler scripts.](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/ "HorizontalPodAutoscaler scripts.")
 
-We have https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.3-magento-front-phpfpm-hpa.yaml to scale up and down the PHP-FPM pods, and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/20.4-magento-front-phpfpm-nginx.yaml for NGINX.
+We have https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/20.3-magento-front-phpfpm-hpa.yaml to scale up and down the PHP-FPM pods, and https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/20.4-magento-front-phpfpm-nginx.yaml for NGINX.
 
 ```ssh
-kubectl apply -f=scripts/20.1-magento-front-phpfpm.yaml
-kubectl apply -f=scripts/20.2-magento-front-nginx.yaml
-kubectl apply -f=scripts/20.3-magento-front-phpfpm-hpa.yaml
-kubectl apply -f=scripts/20.4-magento-front-phpfpm-hpa.yaml
+kubectl apply -f=scripts/gcp/20.1-magento-front-phpfpm.yaml
+kubectl apply -f=scripts/gcp/20.2-magento-front-nginx.yaml
+kubectl apply -f=scripts/gcp/20.3-magento-front-phpfpm-hpa.yaml
+kubectl apply -f=scripts/gcp/20.4-magento-front-phpfpm-hpa.yaml
 ```
 
 <br/>
 
 ### Clean Nodes
 
-We have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/21-clean-nodes-cron.yaml script which deploys our https://github.com/Imagination-Media/gcp-kubernetes-clean-nodes script (only for Google Cloud projects) which is used to clean up any temporary data and files from Kubernetes nodes.
+We have the https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/21-clean-nodes-cron.yaml script which deploys our https://github.com/Imagination-Media/gcp-kubernetes-clean-nodes script (only for Google Cloud projects) which is used to clean up any temporary data and files from Kubernetes nodes.
 
 <br/>
 
@@ -582,9 +582,9 @@ affinity:
                 - services
 ```
 
-On this example (from https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/4-elasticsearch-deployment.yaml), we deploy the ElasticSearch pods in the **_services_** node pool. So, we created a node pool named services, it has one or more nodes (instances) there, and they are used to deploy these pods.
+On this example (from https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/4-elasticsearch-deployment.yaml), we deploy the ElasticSearch pods in the **_services_** node pool. So, we created a node pool named services, it has one or more nodes (instances) there, and they are used to deploy these pods.
 
-Same for the cron PHP-FPM (https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/19-magento-cron-phpfpm.yam), we have this:
+Same for the cron PHP-FPM (https://github.com/Imagination-Media/magento-k8s/blob/master/scripts/gcp/19-magento-cron-phpfpm.yam), we have this:
 
 ```ssh
 affinity:
@@ -599,6 +599,34 @@ affinity:
 ```
 
 We have a cron node pool we nodes(instances) dedicated to this cron deployment.
+
+<br/>
+
+### AWS EKS specifics
+
+Amazon Elastic Kubernetes Service is a shared responsibility Kubernetes cluster installation, yet with a full AWS integration, comparing to any standalone ways of installing Kubernetes on AWS. AWS IAM integration is the reason why we need admin access rights.
+
+To start working with EKS, install the following utilities:
+
+- **aws-cli** - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+- **kubectl** - exactly version 1.23 needed, due to current EKS API-gateway issues. Version requirement may be relaxed in future. https://kubernetes.io/docs/tasks/tools/#kubectl
+- **eksctl** - https://github.com/eksctl-io/eksctl/blob/main/README.md#installation
+
+All EKS-related scripts and manifests are inside the https://github.com/Imagination-Media/magento-k8s/tree/master/scripts/eks folder.
+
+Install EKS cluster. This will provide you with a cluster within 2 AZs, with EFS mount targets ready to be consumed by ReadWriteMany PVs.
+
+- Check the **create-cluster.sh** script. Populate AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY variables, or comment them out if they are already exported in your environment. Set EKS_KUBE_VERSION to the latest EKS version at the moment of installation(at the moment of writing EKS version is 1.27, kubectl - 1.23(due to EKS bugs)). Tune other variables as needed(Currently we are using 2(scaling up to 3) of 32GB RAM, 8 core, ARM64(Graviton2) instances).
+- **./create-cluster.sh** and wait for the environment to stabilize.
+- **aws eks update-kubeconfig --region us-east-1 --name aws-demo** - update your current **~/.kube/config** file.
+- **kubectl get nodes** - see the cluster of 2 worker nodes, exactly as you've specified in **create-cluster.sh** script.
+- Check AWS EC2 console, ssh as **ec2-user** to every node with the key you've specified in **~/.kube/config** file.
+
+Install/update Magento manifests by running **./deploy-magento.sh.** The script contents and manifests themselves are subject to further change.
+
+Check the Magento namespace pods:
+
+- **kubectl -n magento-demo-production get pod**
 
 <br/>
 
