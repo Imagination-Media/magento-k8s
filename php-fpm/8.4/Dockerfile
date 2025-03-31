@@ -152,7 +152,7 @@ RUN apt-get install apt-transport-https ca-certificates gnupg -y && \
 
 # Install gcsfuse
 RUN apt-get install fuse -y && \
-    /usr/local/go/bin/go install github.com/googlecloudplatform/gcsfuse@latest
+    /usr/local/go/bin/go install github.com/googlecloudplatform/gcsfuse@v1.1.0
 
 # Install grpc
 RUN apt-get install autoconf -y && \
