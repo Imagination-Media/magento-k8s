@@ -35,7 +35,7 @@ jobs:
           tags: "7.2, 7.2-amd64"
           workdir: php-fpm/7.2
 
-  php_fpm_81_arm64:
+  php_fpm_72_arm64:
     name: Php-fpm (7.2) arm64
     runs-on: buildjet-2vcpu-ubuntu-2204-arm
     steps:

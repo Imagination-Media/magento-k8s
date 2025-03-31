@@ -1,0 +1,11 @@
+host bitbucket.org
+  HostName bitbucket.org
+  IdentityFile ~/.ssh/id_rsa
+  User git
+  StrictHostKeyChecking no
+
+host github.com
+  HostName github.com
+  IdentityFile ~/.ssh/id_rsa
+  User git
+  StrictHostKeyChecking no

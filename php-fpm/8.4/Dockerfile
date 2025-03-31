@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 RUN apt-get -y update && apt-get install -y unzip vim wget curl git openssh-server cron bash-completion mariadb-client pv zip
 
@@ -46,7 +46,7 @@ RUN docker-php-ext-enable opcache && \
     && docker-php-ext-install curl && \
     apt-get install -y \
     libssl-dev \
-    && docker-php-ext-install ftp phar && \
+    && docker-php-ext-install ftp && \
     apt-get install -y \
     libicu-dev \
     && docker-php-ext-install intl && \
@@ -75,7 +75,7 @@ RUN docker-php-ext-enable opcache && \
     docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
 
 # Create folder to install plugins
-RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20230831
+RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20240924
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
