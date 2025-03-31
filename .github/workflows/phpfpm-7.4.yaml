@@ -19,7 +19,7 @@ on:
           - debug
 
 jobs:
-  php_fpm_81_amd64:
+  php_fpm_74_amd64:
     name: Php-fpm (7.4) amd64
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +35,7 @@ jobs:
           tags: "7.4, 7.4-amd64"
           workdir: php-fpm/7.4
 
-  php_fpm_81_arm64:
+  php_fpm_74_arm64:
     name: Php-fpm (7.4) arm64
     runs-on: buildjet-2vcpu-ubuntu-2204-arm
     steps:

@@ -32,7 +32,7 @@ else
 
   php /var/www/html/bin/magento setup:upgrade --keep-generated
   php /var/www/html/bin/magento setup:di:compile
-  
+
   # Unzip the pub/static folder
   cd /var/www/html/ && unzip -o /var/www/html/pub/static.zip -d /var/www/html/pub/
   rm -rf /var/www/html/pub/static.zip
@@ -67,7 +67,7 @@ if [[ -z "$gcsfuse_enable" || "$gcsfuse_enable" == "0" ]]; then
   echo "Gcsfuse not enabled"
 else
   echo "Gcsfuse enabled"
-  
+
   #Mount volumes
   mkdir -p /root/.config/gcloud && echo "$gke_service_account_key" >> /root/.config/gcloud/application_default_credentials.base64
   base64 -d /root/.config/gcloud/application_default_credentials.base64 > /root/.config/gcloud/application_default_credentials.json
@@ -98,7 +98,7 @@ else
   service ssh start
 fi
 
-# Start Mailhog 
+# Start Mailhog
 if [[ -z "$mailhog" || "$mailhog" == "0" ]]; then
     echo "No mailhog"
 else

@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 RUN apt-get -y update && apt-get install -y unzip vim wget curl git openssh-server cron bash-completion mariadb-client pv zip
 
@@ -46,7 +46,7 @@ RUN docker-php-ext-enable opcache && \
     && docker-php-ext-install curl && \
     apt-get install -y \
     libssl-dev \
-    && docker-php-ext-install ftp phar && \
+    && docker-php-ext-install ftp && \
     apt-get install -y \
     libicu-dev \
     && docker-php-ext-install intl && \
@@ -75,7 +75,7 @@ RUN docker-php-ext-enable opcache && \
     docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
 
 # Create folder to install plugins
-RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20230831
+RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20240924
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
@@ -139,7 +139,7 @@ RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
     chown -R root:root ./go && \
     mv go /usr/local && \
     rm -rf go1.19.3.linux-${arch}.tar.gz
-ENV GOPATH=$HOME/work
+ENV GOPATH=/root/work
 ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
 # Google Cloud SDK
