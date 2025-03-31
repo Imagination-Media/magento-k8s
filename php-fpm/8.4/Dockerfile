@@ -38,20 +38,36 @@ COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Install PHP libraries
 RUN docker-php-ext-enable opcache
+
 RUN docker-php-ext-install calendar
+
 RUN docker-php-ext-install bcmath
+
 RUN docker-php-ext-install pdo_mysql
+
 RUN apt-get install -y libcurl4-openssl-dev && docker-php-ext-install curl
+
 RUN apt-get install -y libssl-dev && docker-php-ext-install ftp
+
 RUN apt-get install -y libicu-dev && docker-php-ext-install intl
+
 RUN apt-get install -y libmcrypt-dev && docker-php-ext-install session
+
 RUN apt-get install -y libzip-dev zlib1g-dev && docker-php-ext-install zip
+
 RUN apt-get install -y libgmp-dev && docker-php-ext-install gmp
+
 RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev && docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install -j$(nproc) gd
-RUN apt-get install -y libmagickwand-dev && pecl install imagick-3.7.0 || pecl install imagick && docker-php-ext-enable imagick
+
+RUN apt-get install -y libmagickwand-dev && \
+    pecl install imagick-3.6.0 && \
+    docker-php-ext-enable imagick
+
 RUN apt-get install -y libxslt-dev && docker-php-ext-install soap
 RUN docker-php-ext-install xsl
+
 RUN docker-php-ext-install sockets
+
 RUN docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
 
 # Create folder to install plugins
