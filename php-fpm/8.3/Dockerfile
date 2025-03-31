@@ -67,10 +67,6 @@ RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) gd
 
-RUN apt-get install -y libmagickwand-dev && \
-    pecl install imagick-3.6.0 && \
-    docker-php-ext-enable imagick
-
 RUN apt-get install -y libxslt-dev && \
     docker-php-ext-install soap
 
