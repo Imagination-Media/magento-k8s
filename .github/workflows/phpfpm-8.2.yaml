@@ -19,7 +19,7 @@ on:
           - debug
 
 jobs:
-  php_fpm_81_amd64:
+  php_fpm_82_amd64:
     name: Php-fpm (8.2) amd64
     runs-on: ubuntu-latest
     steps:
