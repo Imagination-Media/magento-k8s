@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Create image
-        uses: elgohr/Publish-Docker-Github-Action@v4
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: imagination-media/magento-k8s/php-fpm
           username: igor-imaginemage
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Create image
-        uses: elgohr/Publish-Docker-Github-Action@v4
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: imagination-media/magento-k8s/php-fpm
           username: igor-imaginemage
