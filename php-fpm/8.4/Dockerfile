@@ -139,7 +139,7 @@ RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
     chown -R root:root ./go && \
     mv go /usr/local && \
     rm -rf go1.19.3.linux-${arch}.tar.gz
-ENV GOPATH=$HOME/work
+ENV GOPATH=/root/work
 ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
 # Google Cloud SDK
