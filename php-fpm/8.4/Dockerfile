@@ -67,7 +67,7 @@ RUN docker-php-ext-enable opcache && \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd && \
     apt-get install -y libmagickwand-dev && \
-    pecl install imagick-3.7.0 && docker-php-ext-enable imagick && \
+    pecl install imagick-3.7.0 || pecl install imagick && docker-php-ext-enable imagick && \
     apt-get install -y libxslt-dev && \
     docker-php-ext-install soap && \
     docker-php-ext-install xsl && \
