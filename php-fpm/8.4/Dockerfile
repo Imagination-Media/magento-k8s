@@ -37,34 +37,11 @@ COPY welcome.txt /etc/motd
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Install PHP libraries
-RUN docker-php-ext-enable opcache
-
-RUN docker-php-ext-install calendar
-
-RUN docker-php-ext-install bcmath
-
-RUN docker-php-ext-install pdo_mysql
-
-RUN apt-get install -y libcurl4-openssl-dev && docker-php-ext-install curl
-
-RUN apt-get install -y libssl-dev && docker-php-ext-install ftp
-
-RUN apt-get install -y libicu-dev && docker-php-ext-install intl
-
-RUN apt-get install -y libmcrypt-dev && docker-php-ext-install session
-
-RUN apt-get install -y libzip-dev zlib1g-dev && docker-php-ext-install zip
-
-RUN apt-get install -y libgmp-dev && docker-php-ext-install gmp
-
-RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev && docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install -j$(nproc) gd
-
-RUN apt-get install -y libxslt-dev && docker-php-ext-install soap
-RUN docker-php-ext-install xsl
-
-RUN docker-php-ext-install sockets
-
-RUN docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
+RUN apt-get install -y libcurl4-openssl-dev libssl-dev libicu-dev libmcrypt-dev libzip-dev zlib1g-dev libgmp-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxslt-dev && \
+    docker-php-ext-enable opcache && \
+    docker-php-ext-install calendar bcmath pdo_mysql curl ftp intl session zip gmp sockets soap xsl && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install -j$(nproc) gd && \
+    docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl
 
 # Create folder to install plugins
 RUN mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20240924
@@ -123,36 +100,6 @@ RUN chmod +x /usr/local/bin/magupgrade && \
     ln -s /var/www/util/redis-cli/bin/rdcli /usr/local/bin/redis-cli && \
     chmod +x /usr/local/bin/redis-cli && \
     chown nginx:nginx /usr/local/bin/redis-cli
-
-# Install Golang
-# RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
-#     curl -O https://dl.google.com/go/go1.19.3.linux-${arch}.tar.gz && \
-#     tar xvf go1.19.3.linux-${arch}.tar.gz && \
-#     chown -R root:root ./go && \
-#     mv go /usr/local && \
-#     rm -rf go1.19.3.linux-${arch}.tar.gz
-# ENV GOPATH=/root/work
-# ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-
-# # Google Cloud SDK
-# RUN apt-get install apt-transport-https ca-certificates gnupg -y && \
-#     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-#     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
-#     apt-get update && \
-#     apt-get install kmod -y && \
-#     apt-get install google-cloud-cli -y
-
-# # Install gcsfuse
-# RUN apt-get install fuse -y && \
-#     /usr/local/go/bin/go install github.com/googlecloudplatform/gcsfuse@v1.1.0
-
-# # Install grpc
-# RUN apt-get install autoconf -y && \
-#     apt-get install zlib1g-dev -y && \
-#     wget http://pear.php.net/go-pear.phar && \
-#     php go-pear.phar && pecl install grpc && \
-#     rm -rf go-pear.phar && \
-#     docker-php-ext-enable grpc
 
 # Install Sansec Magento Corediff (https://github.com/sansecio/corediff)
 RUN cd /var/www/util && \
