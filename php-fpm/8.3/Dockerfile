@@ -36,7 +36,7 @@ COPY welcome.txt /etc/motd
 # Copy PHP-FPM www.conf file
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 
-# Install PHP libraries
+# Install PHP libraries required for Adobe Commerce
 RUN docker-php-ext-enable opcache && \
     docker-php-ext-install calendar && \
     docker-php-ext-install bcmath && \
