@@ -67,7 +67,7 @@ RUN docker-php-ext-enable opcache && \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd && \
     apt-get install -y libmagickwand-dev && \
-    pecl install imagick && docker-php-ext-enable imagick && \
+    pecl install imagick-3.7.0 && docker-php-ext-enable imagick && \
     apt-get install -y libxslt-dev && \
     docker-php-ext-install soap && \
     docker-php-ext-install xsl && \
@@ -107,7 +107,7 @@ RUN mkdir -p /var/www/util && chown -R nginx:nginx /var/www/util && \
 
 # Mailhog
 RUN apt install golang-go -y && \
-    go get github.com/mailhog/MailHog && \
+    go install github.com/mailhog/MailHog@latest && \
     mv ~/go/bin/MailHog /usr/local/bin/mailhog && \
     echo "sendmail_path='/usr/local/bin/mailhog sendmail mailhog@mail.com'" > /usr/local/etc/php/conf.d/docker-php-ext-mailhog.ini
 

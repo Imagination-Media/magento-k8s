@@ -107,7 +107,7 @@ RUN mkdir -p /var/www/util && chown -R nginx:nginx /var/www/util && \
 
 # Mailhog
 RUN apt install golang-go -y && \
-    go get github.com/mailhog/MailHog && \
+    go install github.com/mailhog/MailHog@latest && \
     mv ~/go/bin/MailHog /usr/local/bin/mailhog && \
     echo "sendmail_path='/usr/local/bin/mailhog sendmail mailhog@mail.com'" > /usr/local/etc/php/conf.d/docker-php-ext-mailhog.ini
 
@@ -139,7 +139,7 @@ RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
     chown -R root:root ./go && \
     mv go /usr/local && \
     rm -rf go1.19.3.linux-${arch}.tar.gz
-ENV GOPATH=$HOME/work
+ENV GOPATH=/root/work
 ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
 # Google Cloud SDK
@@ -152,7 +152,7 @@ RUN apt-get install apt-transport-https ca-certificates gnupg -y && \
 
 # Install gcsfuse
 RUN apt-get install fuse -y && \
-    /usr/local/go/bin/go install github.com/googlecloudplatform/gcsfuse@latest
+    /usr/local/go/bin/go install github.com/googlecloudplatform/gcsfuse@v1.1.0
 
 # Install grpc
 RUN apt-get install autoconf -y && \
