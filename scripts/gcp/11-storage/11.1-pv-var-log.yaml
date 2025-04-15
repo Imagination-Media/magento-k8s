@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-var-log
+  namespace: magento-demo-production
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /Users/ludgero/Webroot/magento-demo-open-source/server/k8s/production/storageConfig/local/storage/var/log
+    type: DirectoryOrCreate

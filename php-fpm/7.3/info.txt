@@ -1,0 +1,8 @@
+Image name:
+imagination-media/magento-k8s/php-fpm:7.3
+ghcr.io/imagination-media/magento-k8s/php-fpm:7.3
+
+docker buildx create --use
+
+docker buildx build --no-cache --platform linux/arm64 \
+-t ghcr.io/imagination-media/magento-k8s/php-fpm:7.3 --push .

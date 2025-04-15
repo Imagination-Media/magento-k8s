@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-fpc-service
+  namespace: magento-demo-production
+  labels:
+    app: redis-fpc
+spec:
+  selector:
+    app: redis-fpc
+  ports:
+    - protocol: 'TCP'
+      port: 6379
+      targetPort: 6379
+  type: ClusterIP

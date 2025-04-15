@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: admin-proxy
+  namespace: magento-demo-production
+spec:
+  rules:
+    - host: "admin-magento-open-source.imaginationmedia.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: magento-admin-nginx-service
+                port:
+                  number: 80
+    - host: "magento-open-source.imaginationmedia.com"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: magento-front-nginx-service
+                port:
+                  number: 80

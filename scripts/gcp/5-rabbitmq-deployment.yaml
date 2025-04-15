@@ -1,0 +1,48 @@
+#RabbitMQ
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+  namespace: magento-demo-production
+  annotations:
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "true"
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.9.26
+          resources:
+            limits:
+              memory: '1500Mi'
+              cpu: '300m'
+            requests:
+              memory: '1500Mi'
+              cpu: '300m'
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Equal"
+          value: "arm64"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'cloud.google.com/gke-nodepool'
+                    operator: In
+                    values:
+                      - services
+                  - key: 'kubernetes.io/arch'
+                    operator: In
+                    values:
+                      - arm64

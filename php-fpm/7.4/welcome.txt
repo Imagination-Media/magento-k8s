@@ -1,0 +1,16 @@
+  ___                               _                   _     _                     __  __              _   _         
+ |_ _|  _ __ ___     __ _    __ _  (_)  _ __     __ _  | |_  (_)   ___    _ __     |  \/  |   ___    __| | (_)   __ _ 
+  | |  | '_ ` _ \   / _` |  / _` | | | | '_ \   / _` | | __| | |  / _ \  | '_ \    | |\/| |  / _ \  / _` | | |  / _` |
+  | |  | | | | | | | (_| | | (_| | | | | | | | | (_| | | |_  | | | (_) | | | | |   | |  | | |  __/ | (_| | | | | (_| |
+ |___| |_| |_| |_|  \__,_|  \__, | |_| |_| |_|  \__,_|  \__| |_|  \___/  |_| |_|   |_|  |_|  \___|  \__,_| |_|  \__,_|
+                            |___/                                                                                     
+                               
+ This is a Kubernetes managed pod.
+
+ Any changes made on this instance are going to be applied only to this instance.
+
+ Only the var and the media directories are shared across all the instances and any change made here out of these directories are going to be lost after a new deployment.
+
+ Webroot: /var/www/html/
+
+

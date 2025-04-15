@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magento-admin-phpfpm-deployment
+  namespace: magento-demo-production
+  annotations:
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magento-admin-phpfpm
+  template:
+    metadata:
+      labels:
+        app: magento-admin-phpfpm
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+    spec:
+      containers:
+        - name: magento-admin-phpfpm
+          image: ghcr.io/imagination-media/magento-demo-open-source/php-fpm:production
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          envFrom:
+            - configMapRef:
+                name: admin-configmap-phpfpm
+          resources:
+            limits:
+              memory: '3500Mi'
+              cpu: '1000m'
+            requests:
+              memory: '3500Mi'
+              cpu: '1000m'
+          ports:
+            - name: php-fpm-port
+              containerPort: 9000
+            - name: ssh-port
+              containerPort: 22
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 240
+            periodSeconds: 60
+      imagePullSecrets:
+        - name: dockerconfigjson-github-com
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Equal"
+          value: "arm64"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'kubernetes.io/arch'
+                    operator: In
+                    values:
+                      - arm64
+
+---
+
+#PHP-FPM
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento-admin-phpfpm-service
+  namespace: magento-demo-production
+  labels:
+    app: magento-admin-phpfpm
+spec:
+  selector:
+    app: magento-admin-phpfpm
+  ports:
+    - protocol: 'TCP'
+      port: 9001
+      targetPort: php-fpm-port
+  type: ClusterIP
+
+---
+
+#SSH
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento-admin-phpfpm-ssh-service
+  namespace: magento-demo-production
+  labels:
+    app: magento-admin-phpfpm
+spec:
+  selector:
+    app: magento-admin-phpfpm
+  ports:
+    - protocol: 'TCP'
+      port: 2001
+      targetPort: ssh-port
+  type: LoadBalancer

@@ -1,0 +1,52 @@
+name: Build PHP-FPM 7.3 Images
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'php-fpm/7.3/**'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+
+jobs:
+  php_fpm_73_amd64:
+    name: Php-fpm (7.3) amd64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Create image
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: imagination-media/magento-k8s/php-fpm
+          username: igor-imaginemage
+          password: ${{ secrets.NODE_AUTH_TOKEN }}
+          registry: ghcr.io
+          tags: "7.3, 7.3-amd64"
+          workdir: php-fpm/7.3
+
+  php_fpm_73_arm64:
+    name: Php-fpm (7.3) arm64
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Create image
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: imagination-media/magento-k8s/php-fpm
+          username: igor-imaginemage
+          password: ${{ secrets.NODE_AUTH_TOKEN }}
+          registry: ghcr.io
+          tags: "7.3-arm64"
+          workdir: php-fpm/7.3

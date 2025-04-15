@@ -1,0 +1,52 @@
+name: Build Nginx Images
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'nginx/**'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+
+jobs:
+  nginx_amd64:
+    name: Nginx base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Create image
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: imagination-media/magento-k8s/nginx
+          username: igor-imaginemage
+          password: ${{ secrets.NODE_AUTH_TOKEN }}
+          registry: ghcr.io
+          tags: "latest, latest-amd64"
+          workdir: nginx
+
+  nginx_arm64:
+    name: Nginx base + Gcsfuse
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Create image
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: imagination-media/magento-k8s/nginx
+          username: igor-imaginemage
+          password: ${{ secrets.NODE_AUTH_TOKEN }}
+          registry: ghcr.io
+          tags: latest-arm64
+          workdir: nginx

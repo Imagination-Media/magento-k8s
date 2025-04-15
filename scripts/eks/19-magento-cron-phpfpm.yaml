@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magento-cron-phpfpm-deployment
+  namespace: magento-demo-production
+  annotations:
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magento-cron-phpfpm
+  template:
+    metadata:
+      labels:
+        app: magento-cron-phpfpm
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+    spec:
+      containers:
+        - name: magento-cron-phpfpm
+          image: ghcr.io/imagination-media/magento-demo-open-source/php-fpm:production
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          envFrom:
+            - configMapRef:
+                name: cron-configmap-phpfpm
+          resources:
+            limits:
+              memory: '2100Mi'
+              cpu: '600m'
+            requests:
+              memory: '2100Mi'
+              cpu: '600m'
+          ports:
+            - name: php-fpm-port
+              containerPort: 9000
+            - name: ssh-port
+              containerPort: 22
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: dockerconfigjson-github-com
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Equal"
+          value: "arm64"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'kubernetes.io/arch'
+                    operator: In
+                    values:
+                      - arm64

@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clean-nodes-configmap
+  namespace: magento-demo-production
+data:
+  GCP_SERVICE_ACCOUNT_KEY: "aaaaaaa"
+  GCP_CLUSTER: "demo-environment"
+  GCP_ZONE: "us-central1-a"
+  GCP_PROJECT: "magento-2-demo-366018"
+  GCP_GKE_NAMESPACE: "magento-demo-production"
+  GCP_EMAIL: "magento-demo-cluster-service-a@magento-2-demo-366018.iam.gserviceaccount.com"
+  GCP_SSH_USER: "gkeadm"
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clean-nodes-cron-job
+  namespace: magento-demo-production
+  annotations:
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  schedule: "40 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: clean-nodes-pod
+              image: ghcr.io/imagination-media/gcp-kubernetes-clean-nodes/gcp-kubernetes-clean-nodes:latest
+              imagePullPolicy: Always
+              envFrom:
+              - configMapRef:
+                  name: clean-nodes-configmap
+          restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: dockerconfigjson-github-com
+          tolerations:
+            - key: "kubernetes.io/arch"
+              operator: "Equal"
+              value: "arm64"
+              effect: "NoSchedule"
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: 'cloud.google.com/gke-nodepool'
+                        operator: In
+                        values:
+                          - default-pool
+                      - key: 'kubernetes.io/arch'
+                        operator: In
+                        values:
+                          - arm64

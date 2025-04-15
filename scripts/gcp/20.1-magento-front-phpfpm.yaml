@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magento-front-phpfpm-deployment
+  namespace: magento-demo-production
+  annotations:
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magento-front-phpfpm
+  template:
+    metadata:
+      labels:
+        app: magento-front-phpfpm
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+    spec:
+      containers:
+        - name: magento-front-phpfpm
+          image: ghcr.io/imagination-media/magento-demo-open-source/php-fpm:production
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          envFrom:
+            - configMapRef:
+                name: front-configmap-phpfpm
+          resources:
+            limits:
+              memory: '3500Mi'
+              cpu: '1000m'
+            requests:
+              memory: '3500Mi'
+              cpu: '1000m'
+          ports:
+            - name: php-fpm-port
+              containerPort: 9000
+            - name: ssh-port
+              containerPort: 22
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 60
+      imagePullSecrets:
+        - name: dockerconfigjson-github-com
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Equal"
+          value: "arm64"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'cloud.google.com/gke-nodepool'
+                    operator: In
+                    values:
+                      - nginx-phpfpm
+                  - key: 'kubernetes.io/arch'
+                    operator: In
+                    values:
+                      - arm64
+
+---
+
+#PHP-FPM
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento-front-phpfpm-service
+  namespace: magento-demo-production
+  labels:
+    app: magento-front-phpfpm
+spec:
+  selector:
+    app: magento-front-phpfpm
+  ports:
+    - protocol: 'TCP'
+      port: 9003
+      targetPort: php-fpm-port
+  type: ClusterIP

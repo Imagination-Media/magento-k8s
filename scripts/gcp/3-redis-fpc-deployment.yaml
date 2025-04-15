@@ -1,0 +1,46 @@
+#Redis (FPC)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-fpc-deployment
+  namespace: magento-demo-production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-fpc
+  template:
+    metadata:
+      labels:
+        app: redis-fpc
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "true"
+    spec:
+      containers:
+        - name: redis-fpc
+          image: redis:6-alpine
+          resources:
+            limits:
+              memory: '1200Mi'
+              cpu: '400m'
+            requests:
+              memory: '1200Mi'
+              cpu: '400m'
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Equal"
+          value: "arm64"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: 'cloud.google.com/gke-nodepool'
+                    operator: In
+                    values:
+                      - services
+                  - key: 'kubernetes.io/arch'
+                    operator: In
+                    values:
+                      - arm64
