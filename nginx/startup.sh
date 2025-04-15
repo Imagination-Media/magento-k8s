@@ -8,6 +8,13 @@
 #ARG php_fpm_service
 #ARG ip_addresses
 
+# Check if admin_domain and admin_store are not provided
+if [ -z "${admin_domain}" ] || [ -z "${admin_store}" ]; then
+    echo "admin_domain or admin_store not provided. Using nginx-no-admin.conf."
+    rm -f /etc/nginx/nginx.conf
+    mv /etc/nginx/nginx-no-admin.conf /etc/nginx/nginx.conf
+fi
+
 chown -R nginx:nginx /var/www/html/var
 
 # Adjust admin store domain
