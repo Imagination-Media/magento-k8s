@@ -153,12 +153,6 @@ We customized the NGINX configuration to use the PHP-FPM container to execute an
 
 The NGINX dockerfile and NGINX config files are available in https://github.com/Imagination-Media/magento-k8s/tree/master/nginx.
 
-## Gcsfuse
-
-<img src="https://www.intelligencepartner.com/wp-content/uploads/2017/05/CloudStorage-4.png" width="60px" alt="Google Cloud Storage logo" />
-
-Google Cloud has a storage solution called [Cloud Storage](https://cloud.google.com/storage/). It's cheap, and for dev environments it's a good solution.
-
 ## Shared directories
 
 Shared directories are the directories that should be mounted as volumes across all the Nginx and Php-Fpm pods. They have files that are managed by the application.
@@ -360,23 +354,6 @@ KiAqICogKiAqIHBocCAvdmFyL3d3dy9odG1sL2Jpbi9tYWdlbnRvIGNyb246cnVuID4gL3Zhci93d3cv
 - **php_fpm_service** - This is the variable where we define what the PHP-FPM service NGINX is going to use to process any PHP file. As we consistently deployed a PHP-FPM pod along with an NGINX pod, NGINX is just the web server, and any PHP code will be PHP-FPM's pod responsibility. So, on this variable, we will have something like **_magento-admin-phpfpm-service.magento-demo-production:9001_** as the value. It's the name of the service + the namespace + the port. The port will always be **_9001_**, but the name of the service and the namespace may vary depending on your configuration.
 - **ip_addresses** - This is an optional value that can be used to restrict the IP addresses that are allowed to access the storefront. This is useful for development environments, blocking access from out of our team.
 - **admin_ip_addresses** - This is an optional value that can be used to restrict the IP addresses that are allowed to access the admin panel. This is a good practice for development and production environments, restricting access from out of our team.
-
-#### Gcsfuse
-
-If you are using gcsfuse to mount the volumes, you will also need to set up a couple of extra variables.
-
-You first need to generate a service account key from your GCP project, which will be used to mount the Cloud Storage volumes.
-
-Once you have the service account key, these are the variables we are going to set up:
-
-- **gcsfuse_enable** - Set it with 1 to enable gcsfuse.
-- **gke_email** - The service account key email address.
-- **gke_service_account_key** - The base64 encoded service account key.
-- **gke_bucket_var_export** - The name of your Cloud storage bucket to mount the **_var/export_** directory.
-- **gke_bucket_var_report** - The name of your Cloud storage bucket to mount the **_var/report_** directory.
-- **gke_bucket_var_importexport** - The name of your Cloud storage bucket to mount the **_var/importexport_** directory.
-- **gke_bucket_var_log** - The name of your Cloud storage bucket to mount the **_var/log_** directory.
-- **gke_bucket_pub_media** - The name of your Cloud storage bucket to mount the **_pub/media_** directory.
 
 ### Services
 
