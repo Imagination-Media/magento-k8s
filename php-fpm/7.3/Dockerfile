@@ -18,9 +18,10 @@ COPY magento.ini /usr/local/etc/php/conf.d/magento.ini
 RUN ssh-keygen -A
 COPY sshd_config /etc/ssh/sshd_config
 
-# Add nginx user
+# Add nginx user with secure password handling
+ARG NGINX_PASSWORD=dummy_password_replaced_at_build_time
 RUN adduser nginx --gecos "First Last,RoomNumber,WorkPhone,HomePhone" --disabled-password && \
-    echo "nginx:123456" | chpasswd && \
+    echo "nginx:${NGINX_PASSWORD}" | chpasswd && \
     usermod -u 107 systemd-timesync && \
     sed -i 's/\/home\/nginx/\/var\/www\/html/g' /etc/passwd
 
