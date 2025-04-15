@@ -56,39 +56,10 @@ fi
 
 # Set up SourceGuardian
 phpVersion="$(php -v | awk 'NR==1 {print $2}' | cut -d'.' -f1-2)"
-cp /tmp/sourceguardian/ixed.$phpVersion.lin /usr/local/lib/php/extensions/no-debug-non-zts-20230831/ixed.$phpVersion.lin
-chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20230831/ixed.$phpVersion.lin
-echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20230831/ixed.$phpVersion.lin" > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
-
-# Set up IonCube
-
-# Gcsfuse
-if [[ -z "$gcsfuse_enable" || "$gcsfuse_enable" == "0" ]]; then
-  echo "Gcsfuse not enabled"
-else
-  echo "Gcsfuse enabled"
-
-  #Mount volumes
-  mkdir -p /root/.config/gcloud && echo "$gke_service_account_key" >> /root/.config/gcloud/application_default_credentials.base64
-  base64 -d /root/.config/gcloud/application_default_credentials.base64 > /root/.config/gcloud/application_default_credentials.json
-  rm -rf /root/.config/gcloud/application_default_credentials.base64
-  gcloud auth activate-service-account "$gke_email" --key-file=/root/.config/gcloud/application_default_credentials.json
-
-  mkdir -p /var/www/html/var/export && chown nginx:nginx /var/www/html/var/export
-  /work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_export" /var/www/html/var/export
-
-  mkdir -p /var/www/html/var/importexport && chown nginx:nginx /var/www/html/var/importexport
-  /work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_importexport" /var/www/html/var/importexport
-
-  mkdir -p /var/www/html/var/log && chown nginx:nginx /var/www/html/var/log
-  /work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_log" /var/www/html/var/log
-
-  mkdir -p /var/www/html/var/report && chown nginx:nginx /var/www/html/var/report
-  /work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_var_report" /var/www/html/var/report
-
-  mkdir -p /var/www/html/pub/media && chown nginx:nginx /var/www/html/pub/media
-  /work/bin/gcsfuse --implicit-dirs --limit-ops-per-sec "0" --dir-mode "775" --uid "$(id -u nginx)" --gid "$(id -g nginx)" -o allow_other  "$gke_bucket_pub_media" /var/www/html/pub/media
-fi
+mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20240924
+cp /tmp/sourceguardian/ixed.$phpVersion.lin /usr/local/lib/php/extensions/no-debug-non-zts-20240924/ixed.$phpVersion.lin
+chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20240924/ixed.$phpVersion.lin
+echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20240924/ixed.$phpVersion.lin" > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
 
 # Initialize the open ssh server
 if [[ -z "$enable_ssh" || "$enable_ssh" == "0" ]]; then

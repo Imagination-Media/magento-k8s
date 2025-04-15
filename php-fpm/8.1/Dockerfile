@@ -132,28 +132,6 @@ RUN chmod +x /usr/local/bin/magupgrade && \
     chmod +x /usr/local/bin/redis-cli && \
     chown nginx:nginx /usr/local/bin/redis-cli
 
-# Install Golang
-RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
-    curl -O https://dl.google.com/go/go1.19.3.linux-${arch}.tar.gz && \
-    tar xvf go1.19.3.linux-${arch}.tar.gz && \
-    chown -R root:root ./go && \
-    mv go /usr/local && \
-    rm -rf go1.19.3.linux-${arch}.tar.gz
-ENV GOPATH=$HOME/work
-ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-
-# Google Cloud SDK
-RUN apt-get install apt-transport-https ca-certificates gnupg -y && \
-    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
-    apt-get update && \
-    apt-get install kmod -y && \
-    apt-get install google-cloud-cli -y
-
-# Install gcsfuse
-RUN apt-get install fuse -y && \
-    /usr/local/go/bin/go install github.com/googlecloudplatform/gcsfuse@latest
-
 # Install grpc
 RUN apt-get install autoconf -y && \
     apt-get install zlib1g-dev -y && \
