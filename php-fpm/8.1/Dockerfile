@@ -107,8 +107,9 @@ RUN mkdir -p /var/www/util && chown -R nginx:nginx /var/www/util && \
 
 # Mailhog
 RUN apt install golang-go -y && \
-    go get github.com/mailhog/MailHog && \
-    mv ~/go/bin/MailHog /usr/local/bin/mailhog && \
+    export GOPATH=/root/go && \
+    go install github.com/mailhog/MailHog@latest && \
+    mv /root/go/bin/MailHog /usr/local/bin/mailhog && \
     echo "sendmail_path='/usr/local/bin/mailhog sendmail mailhog@mail.com'" > /usr/local/etc/php/conf.d/docker-php-ext-mailhog.ini
 
 # PHP-CS
