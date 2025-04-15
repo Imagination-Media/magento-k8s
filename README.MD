@@ -1,8 +1,5 @@
-<p align="center">
-<img alt="commercetools logo" src="https://cdn.softwarereviews.com/production/logos/offerings/1202/large/AdobeCommerce1.png?1657041673" width="224px"/>
-</p>
 <h2 align="center">
-  Magento 2 Kubernetes Infrastructure
+  Magento 2 Kubernetes Infrastructure + Images
 </h2>
 
 <h4 align="center">Magento 2 deployed with Kubernetes splitting the cron, admin panel, and storefront in different instances.</h4>
