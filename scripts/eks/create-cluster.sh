@@ -5,8 +5,8 @@
 # Working values for EKS_INSTANCE - t3.medium(x86_64), t4g.medium(arm64)
 # a1(fails), t4g(proved working), m6g, m6gd, c6g, c6gd, r6g, r6gd - are claimed to be supported on EKS
 export EKS_INSTANCE="t4g.2xlarge"
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=
+# export AWS_ACCESS_KEY_ID=
+# export AWS_SECRET_ACCESS_KEY=
 export EKS_CLUSTER=aws-demo
 export EKS_REGION=us-east-1
 export EKS_ZONES="us-east-1a,us-east-1b"

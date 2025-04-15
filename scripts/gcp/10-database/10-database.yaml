@@ -23,7 +23,7 @@ spec:
           image: mariadb:10.4.26
           env:
           - name: MYSQL_ROOT_PASSWORD
-            value: "root"
+            value: "${MYSQL_ROOT_PASSWORD}" # Replace with environment variable
           - name: MYSQL_DATABASE
             value: "magento"
           - name: TZ
@@ -31,7 +31,7 @@ spec:
           - name: MYSQL_USER
             value: "magento"
           - name: MYSQL_PASSWORD
-            value: "magento"
+            value: "${MYSQL_PASSWORD}" # Replace with environment variable
           resources:
             limits:
               memory: '2000Mi'

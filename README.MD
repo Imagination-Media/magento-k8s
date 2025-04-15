@@ -666,7 +666,7 @@ return [
             'host' => 'rabbitmq-service.magento-demo-production',
             'port' => '5672',
             'user' => 'guest',
-            'password' => 'guest',
+            'password' => '${RABBITMQ_PASSWORD}', // Use environment variable
             'virtualhost' => '/',
             'ssl' => 'false'
         ],
@@ -718,7 +718,7 @@ return [
         ]
     ],
     'crypt' => [
-        'key' => 'a9733de5cf3df023e3e7ff6d5fac7aef'
+        'key' => '${MAGENTO_ENCRYPTION_KEY}' // Use environment variable
     ],
     'db' => [
         'table_prefix' => '',
@@ -727,7 +727,7 @@ return [
                 'host' => '34.28.146.205',
                 'dbname' => 'magento',
                 'username' => 'magento',
-                'password' => 'yCHU3j972GDj',
+                'password' => '${DB_PASSWORD}', // Use environment variable
                 'model' => 'mysql4',
                 'engine' => 'innodb',
                 'initStatements' => 'SET NAMES utf8;',
@@ -740,7 +740,7 @@ return [
                 'host' => '34.28.146.205',
                 'dbname' => 'magento',
                 'username' => 'magento',
-                'password' => 'yCHU3j972GDj',
+                'password' => '${DB_PASSWORD}', // Use environment variable
                 'active' => '1',
                 'persistent' => null
             ]
@@ -789,7 +789,7 @@ return [
                     'server' => 'redis-fpc-service.magento-demo-production',
                     'database' => '0',
                     'port' => '6379',
-                    'password' => '',
+                    'password' => '${REDIS_PASSWORD}', // Use environment variable
                     'compress_data' => '1',
                     'compression_lib' => ''
                 ]
@@ -801,7 +801,7 @@ return [
                     'server' => 'redis-fpc-service.magento-demo-production',
                     'database' => '1',
                     'port' => '6379',
-                    'password' => '',
+                    'password' => '${REDIS_PASSWORD}', // Use environment variable
                     'compress_data' => '0',
                     'compression_lib' => ''
                 ]
