@@ -32,7 +32,7 @@ else
 
   php /var/www/html/bin/magento setup:upgrade --keep-generated
   php /var/www/html/bin/magento setup:di:compile
-  
+
   # Unzip the pub/static folder
   cd /var/www/html/ && unzip -o /var/www/html/pub/static.zip -d /var/www/html/pub/
   rm -rf /var/www/html/pub/static.zip
@@ -56,10 +56,43 @@ fi
 
 # Set up SourceGuardian
 phpVersion="$(php -v | awk 'NR==1 {print $2}' | cut -d'.' -f1-2)"
-mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20240924/
+mkdir -p /usr/local/lib/php/extensions/no-debug-non-zts-20240924
 cp /tmp/sourceguardian/ixed.$phpVersion.lin /usr/local/lib/php/extensions/no-debug-non-zts-20240924/ixed.$phpVersion.lin
 chmod 755 /usr/local/lib/php/extensions/no-debug-non-zts-20240924/ixed.$phpVersion.lin
 echo "zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20240924/ixed.$phpVersion.lin" > /usr/local/etc/php/conf.d/docker-php-ext-sourceguardian.ini
+
+# Install xDebug
+if [[ -z "$xdebug" || "$xdebug" == "0" ]]; then
+    echo "No xdebug"
+else
+    echo "Enabling xdebug"
+    pecl install xdebug-3.4.2
+    echo 'zend_extension=xdebug.so
+xdebug.mode=develop,debug
+xdebug.client_host=localhost
+xdebug.start_with_request=trigger
+xdebug.client_port="9003"
+xdebug.start_with_request=yes
+xdebug.connect_timeout_ms=2000
+xdebug.start_upon_error=yes
+xdebug.log=/tmp/xdebug.log
+' > /usr/local/etc/php/conf.d/xdebug.ini
+fi
+
+# Install Blackfire 
+if [[ -z "$blackfire" || "$blackfire" == "0" ]]; then
+    echo "No blackfire"
+else
+    echo "Enabling blackfire"
+    
+    #Install blackfire
+    apt install blackfire -y
+    apt install blackfire-php -y
+    service blackfire-agent stop
+    chown -R nginx:nginx /etc/blackfire/
+    mkdir -p /var/run/blackfire/ && chown -R nginx:nginx /var/run/blackfire/
+    chmod -R 775 /var/run/blackfire
+fi
 
 # Initialize the open ssh server
 if [[ -z "$enable_ssh" || "$enable_ssh" == "0" ]]; then
@@ -69,7 +102,7 @@ else
   service ssh start
 fi
 
-# Start Mailhog 
+# Start Mailhog
 if [[ -z "$mailhog" || "$mailhog" == "0" ]]; then
     echo "No mailhog"
 else
