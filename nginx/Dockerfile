@@ -8,7 +8,6 @@ RUN apt-get install -y git vim zip
 
 #Copy Nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY magento.conf /etc/nginx/magento.conf
 
 # Execute the startup bash script on the startup
 COPY startup.sh /docker-entrypoint.d/00-nginx-conf-mod.sh
